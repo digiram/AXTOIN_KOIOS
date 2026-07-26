@@ -1,0 +1,10 @@
+{
+  // DB package — includes Drizzle Kit configs so `tsc` typechecks migration tooling alongside runtime code.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src", "drizzle.config.pg.ts", "drizzle.config.mysql.ts", "dotenv-kit-bootstrap.ts"]
+}

@@ -1,0 +1,16 @@
+{
+  // Vite + React — Bundler resolution for tree-shaking; paths mirror workspace packages used by the SPA.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["vite/client"],
+    // Implicit baseUrl = this folder (same as explicit "."). Omit "." — some IDE/tsconfig schemas flag it.
+    "paths": {
+      "@starter/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["src", "vitest.config.ts", "vite.config.ts", "dev-api-proxy-paths.ts"]
+}

@@ -1,0 +1,16 @@
+---
+description: Prefer Lucide for icons in the web app; avoid ad-hoc SVGs
+globs: apps/web/**/*.{tsx,ts}
+alwaysApply: false
+---
+
+# Icons (`@starter/web`)
+
+**Prefer the icon library first.** Use **`lucide-react`** for any new UI icon (navigation, buttons, form adornments, tables, empty states).
+
+- **Import** named icons from `lucide-react` (tree-shakeable), e.g. `import { Mail, Settings } from "lucide-react"`.
+- **Sizing / stroke**: control with `className` (e.g. `h-5 w-5`) and `strokeWidth={2}` unless matching existing `1.5` adornments.
+- **Do not** add new raw inline `<svg>` blocks for generic icons when a Lucide equivalent exists—browse [lucide.dev/icons](https://lucide.dev/icons/).
+- **Exception**: **country flags** stay on **`country-flag-icons`** (`CountryFlagSvg`, etc.)—that is domain-specific, not generic glyphs.
+
+Shared shell nav wrappers live in `apps/web/src/components/icons.tsx` (Lucide-based).

@@ -1,0 +1,26 @@
+# Dependencies & builds
+node_modules/
+dist/
+
+# Secrets — never commit; copy from .env.example
+.env
+.env.local
+.env.*.local
+
+# Expo / native tooling
+.expo/
+
+# Tests & logs
+coverage/
+*.log
+
+# Local dev process registry (`pnpm stop`)
+.dev/
+
+# Local API uploads (CRM contact + workforce profile photos)
+apps/api/files/**
+!apps/api/files/.gitkeep
+
+# Web: declaration emit artifacts must not live beside source (use dist/ or Vite bundle only)
+apps/web/src/**/*.d.ts
+apps/web/src/**/*.d.ts.map

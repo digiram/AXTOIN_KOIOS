@@ -1,0 +1,31 @@
+---
+description: Catch shell/nav drift and unsafe React UI libraries before merge
+alwaysApply: true
+---
+
+# Integration guards (nav shell, routes, React peers)
+
+## Super-admin / app shell consistency
+
+When adding or renaming a **super-admin** (or any primary-nav) screen:
+
+1. **Route** — Register it in the router (**e.g. `apps/web/src/App.tsx`**).
+2. **Sidebar** — Add the matching **`nav`** item (**e.g. `apps/web/src/layouts/SuperLayout.tsx`**: `to`, `label`, `icon`, `end` where paths collide).
+3. **Header / titles** — If layout uses pathname checks (**`isMail`**, etc.) for title/subtitle, **wire the same feature into `nav`** in the same change. Header-only logic yields URLs that work but never appear in the left rail.
+
+**Sanity check:** Open the parent hub and deep-link the URL; both navigation and titling should match.
+
+## App shell page body (tenant admin, settings, etc.)
+
+**`AppShell`** already renders the primary **title** and **header subtitle** from layout meta (or equivalent). Page content under the header should **not** repeat a second **page-level** title or subtitle directly below that strip (no extra `h1` / lead paragraph that mirrors the shell). Use **tabs**, **section `h3`**, and short in-panel copy only; let the shell carry the screen name and one-line explainer.
+
+## React UI libraries and peer compatibility
+
+When introducing or upgrading a package that **renders React UI** (builders, editors, charts, etc.):
+
+1. Compare **`peerDependencies`** on **`react` / `react-dom`** to **`apps/web`** (and **`apps/api`** if imported there). **`pnpm install` peer warnings** are intentional signals—confirm the runtime surface (browser vs Node).
+2. If peers **do not include the app’s React major** (e.g. library caps at ^18, app uses **19**), **do not assume dedupe fixes it**—expect crashes (`undefined` internals, broken **`Component`** references). Prefer **server rendering** (same pipeline as production HTML), **another library**, **documented downgrade**, or **isolation**—prove with a smoke test on the real screen.
+
+## Rich previews
+
+When “preview” must match **emailed/exported HTML**, prefer **server-rendered markup** (API + **`iframe` / static HTML**) over mounting a second client React tree from a mismatched peer unless compatibility is verified end-to-end.

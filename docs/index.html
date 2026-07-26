@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en" data-role="all">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Operator runbooks and developer orientation for the SaaS Starter Pack monorepo." />
+    <title>SaaS Starter Pack — Documentation hub</title>
+    <style>
+      :root {
+        --bg: #f1f5f9;
+        --surface: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --accent: #4f46e5;
+        --accent-soft: #eef2ff;
+        --accent-2: #0d9488;
+        --accent-2-soft: #ccfbf1;
+        --link: #1d4ed8;
+        --link-hover: #1e3a8a;
+        --link-visited: #6d28d9;
+        --code-bg: #f1f5f9;
+        --sidebar-w: 19rem;
+        --shadow: 0 1px 3px rgb(15 23 42 / 0.08);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f172a;
+          --surface: #1e293b;
+          --text: #f8fafc;
+          --muted: #94a3b8;
+          --border: #334155;
+          --accent: #818cf8;
+          --accent-soft: #312e81;
+          --accent-2: #2dd4bf;
+          --accent-2-soft: #134e4a;
+          --link: #7dd3fc;
+          --link-hover: #e0f2fe;
+          --link-visited: #c4b5fd;
+          --code-bg: #334155;
+          --shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+        }
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, sans-serif;
+        font-size: 1rem;
+        line-height: 1.65;
+        color: var(--text);
+        background: var(--bg);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: fixed;
+          inset: 0 auto 0 0;
+          width: min(var(--sidebar-w), 92vw);
+          max-height: 100vh;
+          z-index: 40;
+          transform: translateX(-100%);
+          transition: transform 0.2s ease;
+          box-shadow: var(--shadow);
+        }
+        body.nav-open .sidebar {
+          transform: translateX(0);
+        }
+        .sidebar-backdrop {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgb(15 23 42 / 0.45);
+          z-index: 30;
+        }
+        body.nav-open .sidebar-backdrop {
+          display: block;
+        }
+        .main-col {
+          padding-top: 3.25rem;
+        }
+      }
+      .top-bar {
+        display: none;
+      }
+      @media (max-width: 960px) {
+        .top-bar {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 20;
+          padding: 0.6rem 1rem;
+          background: var(--surface);
+          border-bottom: 1px solid var(--border);
+          box-shadow: var(--shadow);
+        }
+        .top-bar button {
+          padding: 0.45rem 0.75rem;
+          border-radius: 0.5rem;
+          border: 1px solid var(--border);
+          background: var(--bg);
+          color: var(--text);
+          font-size: 0.9rem;
+          cursor: pointer;
+        }
+        .top-bar span {
+          font-weight: 600;
+          font-size: 0.95rem;
+        }
+      }
+      .sidebar {
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 1rem 0.85rem 2rem;
+        overflow-y: auto;
+        position: sticky;
+        top: 0;
+        align-self: start;
+        max-height: 100vh;
+      }
+      .sidebar-brand {
+        padding: 0.35rem 0.65rem 0.85rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 0.85rem;
+      }
+      .sidebar-brand strong {
+        display: block;
+        font-size: 0.95rem;
+        letter-spacing: -0.02em;
+      }
+      .sidebar-brand small {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .search-wrap {
+        padding: 0 0.5rem 0.75rem;
+      }
+      .search-wrap label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+      #doc-search {
+        width: 100%;
+        padding: 0.5rem 0.65rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        font: inherit;
+        background: var(--bg);
+        color: var(--text);
+      }
+      #doc-search::placeholder {
+        color: var(--muted);
+      }
+      #doc-search:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .role-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        padding: 0 0.5rem 0.75rem;
+      }
+      .role-tabs button {
+        flex: 1;
+        min-width: 4.5rem;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border-radius: 0.45rem;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .role-tabs button[aria-pressed="true"] {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .role-tabs button[data-role-filter="developer"][aria-pressed="true"] {
+        background: var(--accent-2-soft);
+        color: var(--accent-2);
+        border-color: var(--accent-2);
+      }
+      .doc-nav {
+        font-size: 0.82rem;
+      }
+      .doc-nav .nav-block {
+        margin-bottom: 1rem;
+      }
+      .doc-nav .nav-block > .nav-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        padding: 0.35rem 0.65rem 0.5rem;
+      }
+      .doc-nav .nav-block[data-nav-role="operator"] .nav-label {
+        color: var(--accent);
+      }
+      .doc-nav .nav-block[data-nav-role="developer"] .nav-label {
+        color: var(--accent-2);
+      }
+      .doc-nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .doc-nav .lvl1 > li {
+        margin-bottom: 0.15rem;
+      }
+      .doc-nav .lvl1 > li > a {
+        display: block;
+        padding: 0.35rem 0.65rem;
+        border-radius: 0.4rem;
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .doc-nav .lvl1 > li > a:hover,
+      .doc-nav .lvl1 > li > a:focus-visible {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .doc-nav .lvl2 {
+        padding: 0.15rem 0 0.35rem 0.65rem;
+      }
+      .doc-nav .lvl2 li {
+        margin-bottom: 0.1rem;
+      }
+      .doc-nav .lvl2 a {
+        display: block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.35rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
+      .doc-nav .lvl2 a:hover,
+      .doc-nav .lvl2 a:focus-visible {
+        color: var(--accent);
+        background: var(--bg);
+      }
+      .doc-nav li[hidden],
+      .doc-nav .nav-block[hidden] {
+        display: none !important;
+      }
+      .main-col {
+        min-width: 0;
+      }
+      .wrap {
+        max-width: none;
+        margin: 0;
+        padding: 1.75rem 10% 4rem;
+        box-sizing: border-box;
+      }
+      @media (min-width: 961px) {
+        .wrap {
+          padding: 2rem 10% 4rem;
+        }
+      }
+      .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .page-header h1 {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      .page-header .lede {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.02rem;
+      }
+      .segment {
+        margin-bottom: 3rem;
+        padding: 1.25rem 1.35rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+      .segment-header {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0 0 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .segment-header h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+      }
+      .badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.2rem 0.45rem;
+        border-radius: 0.35rem;
+      }
+      .badge-op {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .badge-dev {
+        background: var(--accent-2-soft);
+        color: var(--accent-2);
+      }
+      .segment[hidden] {
+        display: none !important;
+      }
+      section {
+        margin-bottom: 2.5rem;
+      }
+      section:last-child {
+        margin-bottom: 0;
+      }
+      section > h2 {
+        font-size: 1.28rem;
+        margin: 0 0 0.85rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 2px solid var(--accent-soft);
+        scroll-margin-top: 1rem;
+      }
+      section h3 {
+        font-size: 1.05rem;
+        margin: 1.35rem 0 0.55rem;
+        color: var(--text);
+        scroll-margin-top: 1rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      ul,
+      ol {
+        margin: 0 0 1rem;
+        padding-left: 1.35rem;
+      }
+      li {
+        margin-bottom: 0.35rem;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.88em;
+      }
+      code {
+        background: var(--code-bg);
+        padding: 0.15em 0.45em;
+        border-radius: 0.35rem;
+      }
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        margin: 0 0 1rem;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        margin: 0 0 1rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--accent-soft);
+        font-weight: 600;
+      }
+      .note {
+        background: var(--accent-soft);
+        border-left: 4px solid var(--accent);
+        padding: 0.85rem 1rem;
+        margin: 1rem 0;
+        border-radius: 0 0.5rem 0.5rem 0;
+      }
+      .note-dev {
+        background: var(--accent-2-soft);
+        border-left-color: var(--accent-2);
+      }
+      .diagram {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .diagram svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .schema-erd-diagram {
+        padding: 0.75rem;
+      }
+      .schema-erd-legend {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .schema-erd-legend__item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .schema-erd-legend__item i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        border: 1px solid;
+      }
+      .schema-erd-legend__hint {
+        flex: 1 1 100%;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      @media (min-width: 640px) {
+        .schema-erd-legend__hint {
+          flex: 1 1 auto;
+          text-align: right;
+        }
+      }
+      .schema-erd-cy {
+        width: 100%;
+        height: min(85vh, 900px);
+        min-height: 580px;
+        border-radius: 0.5rem;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+      }
+
+      /* Body links: high-contrast + underline (pnpm.io-style), not accent-on-accent-soft */
+      .wrap a[href] {
+        color: var(--link);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+        text-decoration-thickness: 1px;
+      }
+      .wrap a[href]:hover,
+      .wrap a[href]:focus-visible {
+        color: var(--link-hover);
+      }
+      .wrap a[href]:visited {
+        color: var(--link-visited);
+      }
+      .note a[href],
+      .note-dev a[href] {
+        font-weight: 600;
+      }
+      .md-links {
+        font-size: 0.92rem;
+      }
+      .md-links a {
+        font-weight: 500;
+      }
+      footer {
+        margin-top: 2rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.88rem;
+        color: var(--muted);
+      }
+      mark.search-hit {
+        background: #fde047;
+        color: #0f172a;
+        padding: 0 0.1em;
+        border-radius: 0.15em;
+      }
+      @media print {
+        .sidebar,
+        .top-bar,
+        .sidebar-backdrop {
+          display: none !important;
+        }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .segment {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden aria-hidden="true"></div>
+    <div class="top-bar">
+      <button type="button" id="sidebar-open" aria-expanded="false" aria-controls="sidebar">Menu</button>
+      <span>Docs</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar-brand">
+          <strong>SaaS Starter Pack</strong>
+          <small>Operator runbooks · Developer map</small>
+        </div>
+        <div class="search-wrap">
+          <label for="doc-search">Search documentation</label>
+          <input type="search" id="doc-search" autocomplete="off" placeholder="Search chapters &amp; keywords…" />
+        </div>
+        <div class="role-tabs" role="group" aria-label="Filter by audience">
+          <button type="button" data-role-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-role-filter="operator" aria-pressed="false">Operator</button>
+          <button type="button" data-role-filter="developer" aria-pressed="false">Developer</button>
+        </div>
+        <nav class="doc-nav" id="doc-nav" aria-label="Chapters">
+          <div class="nav-block" data-nav-role="operator">
+            <div class="nav-label">Operator</div>
+            <ul class="lvl1">
+              <li>
+                <a href="#op-requirements" data-nav-for="operator" data-keywords="node pnpm git docker expo lts prerequisites">Prerequisites</a>
+              </li>
+              <li>
+                <a href="#op-first-install" data-nav-for="operator" data-keywords="clone install pnpm env compose bootstrap">First-time install</a>
+              </li>
+              <li>
+                <a href="#op-env" data-nav-for="operator" data-keywords="environment variables env jwt redis database encryption migrate log cors port">Environment variables</a>
+                <ul class="lvl2">
+                  <li><a href="#op-env-core" data-nav-for="operator" data-keywords="node port database redis jwt encryption auto migrate bootstrap super admin log cors">Core &amp; logging</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#op-architecture" data-nav-for="operator" data-keywords="monorepo fastify vite expo worker diagram architecture">System architecture</a>
+              </li>
+              <li>
+                <a href="#op-auth" data-nav-for="operator" data-keywords="jwt refresh token tenant isolation argon2 session">Authentication model</a>
+              </li>
+              <li>
+                <a href="#op-database" data-nav-for="operator" data-keywords="drizzle postgres mysql migration auto_migrate sql schema">Database &amp; migrations</a>
+              </li>
+              <li>
+                <a href="#op-running" data-nav-for="operator" data-keywords="dev pnpm vite api worker typecheck test verify compose">Running locally</a>
+              </li>
+              <li>
+                <a href="#op-docker" data-nav-for="operator" data-keywords="docker compose profile postgres mysql redis">Docker Compose</a>
+              </li>
+              <li>
+                <a href="#op-security" data-nav-for="operator" data-keywords="helmet cors rate limit argon2 secrets encryption production">Security highlights</a>
+              </li>
+              <li>
+                <a href="#op-billing" data-nav-for="operator" data-keywords="stripe subscription webhook setup intent payment platform super admin integrations billing psp ledger dunning">Platform billing (Stripe)</a>
+                <ul class="lvl2">
+                  <li><a href="#op-billing-config" data-nav-for="operator" data-keywords="super admin integrations signing secret webhook url">Configure &amp; webhooks</a></li>
+                  <li><a href="#op-billing-ops" data-nav-for="operator" data-keywords="migration 0030 tenant subscription card">Operational notes</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#op-runbooks" data-nav-for="operator" data-keywords="deploy incident rollback ready health metrics">Deploy &amp; incident runbooks</a>
+              </li>
+              <li>
+                <a href="#op-markdown" data-nav-for="operator" data-keywords="readme markdown runbook editable documentation">Markdown runbooks</a>
+              </li>
+            </ul>
+          </div>
+          <div class="nav-block" data-nav-role="developer">
+            <div class="nav-label">Developer</div>
+            <ul class="lvl1">
+              <li>
+                <a href="#dev-reading" data-nav-for="developer" data-keywords="orientation how to read codebase boundaries thin client">How to read this repo</a>
+              </li>
+              <li>
+                <a href="#dev-layout" data-nav-for="developer" data-keywords="directory structure apps packages monoremap workspace pnpm">Directory map</a>
+                <ul class="lvl2">
+                  <li><a href="#dev-layout-apps" data-nav-for="developer" data-keywords="api web worker mobile fastify vite expo bullmq">Applications</a></li>
+                  <li><a href="#dev-layout-pkgs" data-nav-for="developer" data-keywords="db shared crypto logger drizzle zod">Packages</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#dev-flow" data-nav-for="developer" data-keywords="request lifecycle routes plugins middleware tenant jwt fastify register">Request &amp; module flow</a>
+              </li>
+              <li>
+                <a href="#dev-data" data-nav-for="developer" data-keywords="drizzle repository orm migration dialect postgres mysql repos schema">Data layer &amp; migrations</a>
+              </li>
+              <li>
+                <a href="#dev-erd" data-nav-for="developer" data-keywords="erd entity relationship diagram schema tenants users crm sales workforce subscriptions database tables">Entity relationship diagram</a>
+              </li>
+              <li>
+                <a href="#dev-contracts" data-nav-for="developer" data-keywords="zod shared types validation infer drift api web mobile">Shared contracts &amp; validation</a>
+              </li>
+              <li>
+                <a href="#dev-jobs" data-nav-for="developer" data-keywords="bullmq redis queue worker email idempotency job concurrency">Background jobs</a>
+              </li>
+              <li>
+                <a href="#dev-frontends" data-nav-for="developer" data-keywords="vite tailwind react expo env vite_api_base_url securestore">Web &amp; mobile clients</a>
+              </li>
+              <li>
+                <a href="#dev-api-contract" data-nav-for="developer" data-keywords="openapi v1 versioning metrics request id adr">API contract &amp; ops</a>
+              </li>
+              <li>
+                <a href="#dev-quality" data-nav-for="developer" data-keywords="verify typecheck test lint tdd vitest ci build">Quality gates &amp; CI</a>
+              </li>
+              <li>
+                <a href="#dev-source-docs" data-nav-for="developer" data-keywords="source documentation file header jsdoc tsdoc comments inline exports security">Source documentation standards</a>
+              </li>
+              <li>
+                <a href="#dev-principles" data-nav-for="developer" data-keywords="conventions extend security tenant logging documentation cursor rules prompt principles">Conventions &amp; extending</a>
+              </li>
+              <li>
+                <a href="#dev-markdown" data-nav-for="developer" data-keywords="architecture database security testing glossary authentication environment development best practices source documentation">Markdown deep dives</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <div class="main-col">
+        <div class="wrap">
+          <header class="page-header">
+            <h1>Documentation hub</h1>
+            <p class="lede">
+              Two audiences: <strong>Operators</strong> run and configure the stack (install, env, Compose, security, billing hooks).
+              <strong>Developers</strong> navigate the monorepo, tenant modules (CRM, sales funnel, workforce), contracts, and conventions. Use the sidebar for chapters and
+              <strong>keyword search</strong>; filter by role when you want a narrower view. Long-form, editable detail lives in
+              <a href="./README.md"><code>docs/*.md</code></a> — this page is the structured entry point. In-code file headers and TSDoc follow
+              <a href="./guidelines/source-documentation.md">source-documentation.md</a>.
+            </p>
+          </header>
+
+          <article class="segment" id="segment-operator" data-section-role="operator">
+            <div class="segment-header">
+              <span class="badge badge-op">Operator</span>
+              <h2>Run, configure, ship</h2>
+            </div>
+
+            <section id="op-requirements">
+              <h2>Prerequisites</h2>
+              <ul>
+                <li><strong>Node.js</strong> — LTS recommended (repo targets modern ESM TypeScript).</li>
+                <li>
+                  <strong>pnpm</strong> — Install via <code>corepack enable</code> or
+                  <a href="https://pnpm.io/installation" rel="noopener noreferrer">pnpm.io</a>; the repo pins
+                  <code>pnpm@10.33.2</code> in root <code>package.json</code> (<code>packageManager</code>).
+                </li>
+                <li><strong>Git</strong> — For cloning and updates.</li>
+                <li><strong>Optional:</strong> Docker Desktop (or compatible engine) for Redis + database via Compose.</li>
+                <li><strong>Mobile:</strong> Expo tooling / simulators when working on <code>apps/mobile</code>.</li>
+              </ul>
+            </section>
+
+            <section id="op-first-install">
+              <h2>First-time install</h2>
+              <ol>
+                <li>Clone the repository and open a terminal at the repo root.</li>
+                <li>
+                  Copy the environment template to the <strong>repository root</strong> and edit secrets:
+                  <pre><code>cp .env.example .env</code></pre>
+                  The API and worker load this file even when you start them from <code>apps/api</code> or <code>apps/worker</code>. Adjust database, Redis, JWT secret, and
+                  encryption key (see <a href="#op-env">Environment variables</a>).
+                </li>
+                <li>
+                  Install dependencies:
+                  <pre><code>pnpm install</code></pre>
+                </li>
+                <li>
+                  Start infrastructure (pick one database profile). From the repo root:
+                  <pre><code># PostgreSQL + Redis + API + worker (example)
+docker compose --profile postgres up --build</code></pre>
+                  Or MySQL:
+                  <pre><code>docker compose --profile mysql up --build</code></pre>
+                  Ensure your <code>.env</code> matches the chosen DB (dialect, host, port, credentials).
+                </li>
+                <li>Alternatively run Postgres/MySQL and Redis yourself; point <code>DATABASE_*</code> / <code>REDIS_URL</code> at those services.</li>
+                <li>
+                  <strong>Run web + API + worker together</strong> (needs Postgres/MySQL + Redis already running and <code>.env</code> aligned):
+                  <pre><code>pnpm dev:all</code></pre>
+                  Runs <code>pnpm db:migrate</code> once, then starts Vite (typically port <strong>5173</strong>), the API on <code>API_PORT</code> from <code>.env</code> (legacy <code>PORT</code> if unset), and the BullMQ worker in parallel with <code>AUTO_MIGRATE=false</code> on the API so it binds sooner. Set
+                  <code>VITE_API_BASE_URL</code> if the web app must call a non-default API origin (for example <code>http://localhost:3500</code>).
+                </li>
+                <li>
+                  Or run the API alone (applies migrations on startup when <code>AUTO_MIGRATE</code> rules allow — see <a href="#op-database">Database &amp; migrations</a>):
+                  <pre><code>pnpm --filter @starter/api dev</code></pre>
+                </li>
+              </ol>
+              <div class="note">
+                <strong>Tip:</strong> After changing schema in <code>packages/db</code>, use Drizzle Kit scripts (see root README) to generate new migrations; the API can apply
+                existing migrations on boot when configured.
+              </div>
+            </section>
+
+            <section id="op-env">
+              <h2>Environment variables</h2>
+              <p>
+                Canonical template: <code>.env.example</code>. Values below summarize behavior; URL composition rules live in
+                <code>packages/db/src/database-url.ts</code>. Full tables: <a href="./guidelines/environment.md">environment.md</a>.
+              </p>
+              <h3 id="op-env-core">Core &amp; logging</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>NODE_ENV</code></td>
+                    <td>Typical values: <code>development</code>, <code>production</code>. Affects defaults such as BullMQ queue prefix and <code>AUTO_MIGRATE</code> behavior.</td>
+                  </tr>
+                  <tr>
+                    <td><code>API_PORT</code></td>
+                    <td>HTTP port for the Fastify API (default <code>3000</code> if unset and legacy <code>PORT</code> is unset). Feeds Vite’s default API URL when <code>VITE_API_BASE_URL</code> is unset.</td>
+                  </tr>
+                  <tr>
+                    <td><code>PORT</code></td>
+                    <td>Legacy alias for <code>API_PORT</code> — used only when <code>API_PORT</code> is unset or empty.</td>
+                  </tr>
+                  <tr>
+                    <td><code>CORS_ORIGINS</code> / <code>CORS_CREDENTIALS</code></td>
+                    <td>
+                      In <strong>production</strong>, cross-origin browser access requires a non-empty <code>CORS_ORIGINS</code> allowlist; if unset, CORS is denied. Non-production may use reflect mode when unset. See
+                      <a href="./guidelines/environment.md">environment.md</a>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>DATABASE_DIALECT</code></td>
+                    <td><code>mysql</code> selects MySQL drivers + <code>drizzle/mysql</code> migrations; <code>supabase</code> selects hosted Supabase Postgres (same schema/migrations as Postgres, TLS defaults); otherwise Postgres.</td>
+                  </tr>
+                  <tr>
+                    <td><code>DATABASE_URL</code></td>
+                    <td>Optional single connection string. If set (non-empty after trim), it overrides composed parts — use for hosted URLs, SSL query params, or IPv6.</td>
+                  </tr>
+                  <tr>
+                    <td><code>DATABASE_HOST</code>, <code>DATABASE_PORT</code>, <code>DATABASE_USER</code>, <code>DATABASE_PASSWORD</code>, <code>DATABASE_NAME</code></td>
+                    <td>Used to build a URL when <code>DATABASE_URL</code> is unset. Port defaults: <code>5432</code> (Postgres), <code>3306</code> (MySQL). Password may be empty.</td>
+                  </tr>
+                  <tr>
+                    <td><code>REDIS_URL</code></td>
+                    <td>BullMQ / ioredis connection for the worker and optional API job enqueue.</td>
+                  </tr>
+                  <tr>
+                    <td><code>JWT_ACCESS_SECRET</code></td>
+                    <td>
+                      Secret for signing short-lived access JWTs (<code>@fastify/jwt</code>). In <strong>production</strong> (<code>NODE_ENV=production</code>) the API refuses to start unless
+                      this is set and at least <strong>32</strong> non-whitespace characters. Otherwise, if unset, a dev-only default is used (with a warning in logs).
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>JWT_REFRESH_SECRET</code></td>
+                    <td>
+                      Present in <code>.env.example</code> for future JWT-based refresh flows. <strong>This starter stores refresh tokens as opaque hashes in the DB</strong>, so this
+                      variable is not read by application code unless you extend it.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>FIELD_ENCRYPTION_KEY</code></td>
+                    <td>Base64-encoded 32-byte key for AES-256-GCM field encryption (<code>packages/crypto</code>).</td>
+                  </tr>
+                  <tr>
+                    <td><code>AUTO_MIGRATE</code></td>
+                    <td>
+                      Single migration-on-boot switch: <code>off</code>/<code>false</code>/<code>0</code> never; <code>force</code>/<code>always</code> always (incl. production); <code>dev</code>/unset runs only when
+                      <code>NODE_ENV</code> is not <code>production</code>. Legacy truthy values (<code>true</code>/<code>1</code>) are treated as <code>dev</code> and rejected at boot in production — use <code>force</code> or <code>off</code>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>BOOTSTRAP_SUPER_ADMIN_EMAIL</code>, <code>BOOTSTRAP_SUPER_ADMIN_PASSWORD</code></td>
+                    <td>
+                      Optional API startup seed for a single platform <strong>super admin</strong> (<code>tenant_id</code> NULL). Idempotent: skips if that email already exists. Realm admins
+                      are not bootstrapped — use registration or your own flows.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>LOG_LEVEL</code></td>
+                    <td>Pino level for API and worker (<code>trace</code> … <code>silent</code>). Overrides verbose defaults when set.</td>
+                  </tr>
+                  <tr>
+                    <td><code>VERBOSE</code></td>
+                    <td>Set to <code>true</code> or <code>1</code> for <code>debug</code>-level output when <code>LOG_LEVEL</code> is unset.</td>
+                  </tr>
+                  <tr>
+                    <td><code>LOG_PRETTY</code></td>
+                    <td>Set <code>false</code> to emit JSON lines in development (production always uses JSON).</td>
+                  </tr>
+                  <tr>
+                    <td><code>LOG_HTTP</code></td>
+                    <td>Set <code>false</code> on the API to disable Fastify per-request access logs.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Frontends use public env prefixes where applicable (Vite <code>VITE_*</code>, Expo <code>EXPO_PUBLIC_*</code>) — see <a href="./guidelines/development.md">development.md</a>.</p>
+            </section>
+
+            <section id="op-architecture">
+              <h2>System architecture</h2>
+              <p>
+                The repository is a <strong>pnpm workspace</strong>: applications under <code>apps/*</code>, shared libraries under <code>packages/*</code>. The API owns authentication,
+                tenant scoping, and persistence; web and mobile are thin clients over HTTPS. Deeper diagrams and boundaries:
+                <a href="./guidelines/architecture.md">architecture.md</a>.
+              </p>
+              <div class="diagram" role="img" aria-labelledby="arch-caption">
+                <svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                      <polygon points="0 0, 8 4, 0 8" fill="#64748b" />
+                    </marker>
+                  </defs>
+                  <rect x="40" y="40" width="140" height="56" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+                  <text x="110" y="73" text-anchor="middle" font-size="13" font-family="system-ui,sans-serif" fill="#0f172a">Web (Vite + React)</text>
+                  <rect x="220" y="40" width="140" height="56" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2" />
+                  <text x="290" y="73" text-anchor="middle" font-size="13" font-family="system-ui,sans-serif" fill="#0f172a">Mobile (Expo)</text>
+                  <rect x="120" y="140" width="260" height="64" rx="10" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2" />
+                  <text x="250" y="178" text-anchor="middle" font-size="14" font-weight="600" font-family="system-ui,sans-serif" fill="#0f172a">API (Fastify)</text>
+                  <text x="250" y="196" text-anchor="middle" font-size="11" font-family="system-ui,sans-serif" fill="#475569">JWT · tenants · BullMQ enqueue</text>
+                  <rect x="40" y="260" width="112" height="52" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" />
+                  <text x="96" y="292" text-anchor="middle" font-size="12" font-family="system-ui,sans-serif" fill="#0f172a">@starter/db</text>
+                  <rect x="172" y="260" width="112" height="52" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" />
+                  <text x="228" y="292" text-anchor="middle" font-size="12" font-family="system-ui,sans-serif" fill="#0f172a">@starter/crypto</text>
+                  <rect x="304" y="260" width="112" height="52" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" />
+                  <text x="360" y="292" text-anchor="middle" font-size="12" font-family="system-ui,sans-serif" fill="#0f172a">@starter/shared</text>
+                  <rect x="460" y="140" width="200" height="56" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2" />
+                  <text x="560" y="176" text-anchor="middle" font-size="13" font-family="system-ui,sans-serif" fill="#0f172a">PostgreSQL or MySQL</text>
+                  <rect x="460" y="230" width="200" height="52" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="2" />
+                  <text x="560" y="262" text-anchor="middle" font-size="13" font-family="system-ui,sans-serif" fill="#0f172a">Redis</text>
+                  <rect x="460" y="318" width="200" height="52" rx="8" fill="#faf5ff" stroke="#7c3aed" stroke-width="2" />
+                  <text x="560" y="350" text-anchor="middle" font-size="13" font-family="system-ui,sans-serif" fill="#0f172a">Worker (BullMQ)</text>
+                  <line x1="110" y1="96" x2="210" y2="138" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+                  <line x1="290" y1="96" x2="290" y2="138" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+                  <line x1="200" y1="204" x2="110" y2="258" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+                  <line x1="250" y1="204" x2="228" y2="258" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+                  <line x1="300" y1="204" x2="360" y2="258" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+                  <line x1="380" y1="172" x2="458" y2="172" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+                  <line x1="350" y1="204" x2="520" y2="228" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow)" />
+                  <line x1="560" y1="318" x2="560" y2="284" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+                  <line x1="520" y1="318" x2="520" y2="198" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+                </svg>
+                <p id="arch-caption" style="margin: 0.75rem 0 0; font-size: 0.88rem; color: var(--muted)">
+                  Figure: Clients talk to the API; the API uses workspace packages and persists to SQL; Redis backs BullMQ for the worker and optional async jobs from the API (dashed).
+                </p>
+              </div>
+            </section>
+
+            <section id="op-auth">
+              <h2>Authentication model</h2>
+              <ul>
+                <li><strong>Access JWT</strong> — Short-lived, signed with <code>JWT_ACCESS_SECRET</code>; includes user id, tenant id, and email for downstream handlers.</li>
+                <li>
+                  <strong>Refresh token</strong> — Opaque random string; only a <strong>SHA-256 hash</strong> is stored. Rotation on
+                  <code>POST /v1/auth/refresh</code>. Production web builds may use an <strong>HttpOnly</strong> refresh cookie (see <a href="./guidelines/authentication.md">authentication.md</a>); the SPA also mirrors refresh in <code>sessionStorage</code> for same-tab recovery.
+                </li>
+                <li><strong>Tenant isolation</strong> — Data rows carry <code>tenant_id</code>; protected routes resolve tenant from JWT and repositories scope queries accordingly.</li>
+              </ul>
+              <p>Roles, realm vs platform login, bootstrap: <a href="./guidelines/authentication.md">authentication.md</a>.</p>
+            </section>
+
+            <section id="op-database">
+              <h2>Database &amp; migrations</h2>
+              <ul>
+                <li>Drizzle schemas and SQL migrations live under <code>packages/db</code> (separate folders for Postgres vs MySQL).</li>
+                <li>
+                  <strong>Startup migrations:</strong> If allowed by <code>AUTO_MIGRATE</code> and <code>NODE_ENV</code>, the API runs pending migrations before accepting HTTP connections (see
+                  <code>packages/db/src/migrate.ts</code>).
+                </li>
+                <li><strong>Manual CLI:</strong> Use package scripts <code>db:migrate:pg</code> / <code>db:migrate:mysql</code> when you prefer migrations outside the API process (e.g. CI).</li>
+              </ul>
+              <p>Dialect notes and CLI detail: <a href="./guidelines/database.md">database.md</a>.</p>
+            </section>
+
+            <section id="op-running">
+              <h2>Running locally</h2>
+              <p>From repo root, typical development commands:</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Starts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>pnpm dev:all</code></td>
+                    <td>
+                      <strong>Web + API + worker</strong> in parallel after <code>pnpm db:migrate</code> (Vite + Fastify + BullMQ). Requires DB + Redis; configure <code>VITE_API_BASE_URL</code> when API port differs.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm db:migrate</code></td>
+                    <td>Apply pending SQL migrations via <code>@starter/db</code> (used by <code>dev:all</code>).</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm build:ci</code></td>
+                    <td><code>pnpm verify</code> then full workspace build (CI-style gate).</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm test:e2e</code></td>
+                    <td>Playwright smoke tests (login, CRM create, super-admin); run <code>pnpm test:e2e:install</code> once for Chromium.</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm --filter @starter/api dev</code></td>
+                    <td>Fastify API (<code>tsx watch</code>)</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm --filter @starter/worker dev</code></td>
+                    <td>BullMQ worker</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm --filter @starter/web dev</code></td>
+                    <td>Vite dev server for the React app</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm --filter @starter/mobile start</code></td>
+                    <td>Expo dev tools / bundler</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm -r typecheck</code></td>
+                    <td>Type-check all workspace projects</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm verify</code></td>
+                    <td>Typecheck + tests (recommended before PRs)</td>
+                  </tr>
+                  <tr>
+                    <td><code>pnpm -r test</code></td>
+                    <td>Run tests where defined</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section id="op-docker">
+              <h2>Docker Compose</h2>
+              <p>
+                <code>docker-compose.yml</code> defines Redis, optional Postgres or MySQL (profiles), and builds for the API and worker. Provide env via <code>.env</code>; align database settings
+                with the profile you enable.
+              </p>
+            </section>
+
+            <section id="op-security">
+              <h2>Security highlights</h2>
+              <ul>
+                <li>Helmet, CORS, and rate limiting on the API (see <code>apps/api/src/index.ts</code>); webhook routes may be allow-listed from aggressive throttling — verify in source when hardening.</li>
+                <li>Passwords hashed with Argon2; refresh tokens never stored in plaintext.</li>
+                <li>Optional field-level encryption for sensitive columns via <code>@starter/crypto</code> (AES-256-GCM).</li>
+                <li>Never commit <code>.env</code>; rotate secrets for production.</li>
+              </ul>
+              <p>Checklist and threat-oriented guidance: <a href="./guidelines/security.md">security.md</a>.</p>
+            </section>
+
+            <section id="op-billing">
+              <h2>Platform billing (Stripe)</h2>
+              <p>
+                Realm subscriptions can integrate with <strong>Stripe</strong> for customer records, embedded card capture (SetupIntent + Elements), and webhooks that update subscription / ledger
+                state. Product behavior and schema are documented in <a href="./guidelines/architecture.md">architecture.md</a> (realm subscriptions, payment ledger, baseline shipped).
+              </p>
+              <h3 id="op-billing-config">Configure &amp; webhooks</h3>
+              <ul>
+                <li>
+                  Enter the platform Stripe <strong>secret key</strong> and <strong>webhook signing secret</strong> in <strong>Super Admin → Integrations → Payments</strong> (encrypted at rest via
+                  existing field encryption). The UI shows the public webhook URL pattern: <code>{API_BASE_URL}/webhooks/stripe</code>.
+                </li>
+                <li>In the Stripe Dashboard, point webhooks at that URL and subscribe to the event types suggested in the same screen (e.g. setup and payment intent outcomes).</li>
+                <li>Stripe publishable key is returned to authorized clients only for SetupIntent flows — do not embed long-lived secrets in the SPA.</li>
+              </ul>
+              <h3 id="op-billing-ops">Operational notes</h3>
+              <ul>
+                <li>Apply SQL migration <strong><code>0030_subscription_psp_and_dunning</code></strong> (and prior subscription migrations) on every environment; confirm <code>AUTO_MIGRATE</code> or your CI migration job.</li>
+                <li>After enabling Stripe, new realm subscriptions create/link a <strong>Stripe Customer</strong>; subscribers manage cards from Admin → Subscription or Settings → Subscription.</li>
+                <li>Workers that create PaymentIntents should persist <code>psp_payment_intent_id</code> and set Stripe metadata for correlation — see architecture doc baseline paragraph.</li>
+              </ul>
+            </section>
+
+            <section id="op-runbooks">
+              <h2>Deploy &amp; incident runbooks</h2>
+              <ul>
+                <li><a href="./runbooks/production-checklist.md">runbooks/production-checklist.md</a> — pre-go-live checklist (secrets, S3, cookies, /v1).</li>
+                <li><a href="./runbooks/deploy.md">runbooks/deploy.md</a> — production deploy steps, probes, rollback notes.</li>
+                <li><a href="./runbooks/incident.md">runbooks/incident.md</a> — triage, common failures, security steps.</li>
+              </ul>
+            </section>
+
+            <section id="op-markdown" class="md-links">
+              <h2>Markdown runbooks (editable)</h2>
+              <p>Use these for checklists, long tables, and version-controlled updates:</p>
+              <ul>
+                <li><a href="./README.md">docs/README.md</a> — index of all Markdown pages</li>
+                <li><a href="./guidelines/development.md">development.md</a> — commands, ports, tooling map</li>
+                <li><a href="./guidelines/environment.md">environment.md</a> — full env reference</li>
+                <li><a href="./guidelines/authentication.md">authentication.md</a> — auth flows and roles</li>
+                <li><a href="./guidelines/database.md">database.md</a> — migrations and dialects</li>
+                <li><a href="./guidelines/security.md">security.md</a> — hardening and checklist</li>
+              </ul>
+            </section>
+          </article>
+
+          <article class="segment" id="segment-developer" data-section-role="developer">
+            <div class="segment-header">
+              <span class="badge badge-dev">Developer</span>
+              <h2>Navigate, extend, keep contracts aligned</h2>
+            </div>
+
+            <section id="dev-reading">
+              <h2>How to read this repo</h2>
+              <p>
+                Treat the <strong>API</strong> as the system of record: authentication, authorization, tenant boundaries, validation, and persistence. <strong>Web</strong> and
+                <strong>mobile</strong> apps are clients; they should not duplicate business rules beyond UX-level checks. Shared <strong>Zod</strong> schemas in
+                <code>@starter/shared</code> are the contract layer so TypeScript types and runtime validation stay aligned across processes.
+              </p>
+              <div class="note note-dev">
+                <strong>Onboarding path:</strong> skim this page → open <a href="./guidelines/architecture.md">architecture.md</a> for data flow → use the directory map below when jumping into code → run
+                <code>pnpm verify</code> before pushing.
+              </div>
+            </section>
+
+            <section id="dev-layout">
+              <h2>Directory map</h2>
+              <p>High-level layout of the pnpm workspace (see also root <code>README.md</code> and <a href="./guidelines/architecture.md">architecture.md</a>).</p>
+              <h3 id="dev-layout-apps">Applications (<code>apps/</code>)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Responsibility</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>apps/api</code></td>
+                    <td>
+                      Fastify HTTP server: route modules under <code>src/routes/</code>, plugins and bootstrapping in <code>src/index.ts</code>, env in <code>src/env-bootstrap.ts</code>, cross-cutting
+                      helpers in <code>src/lib/</code>. Registers JWT, tenant resolution, rate limits, raw-body webhooks where needed.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>apps/worker</code></td>
+                    <td>BullMQ consumers; queue names must match API producers. Long-running billing jobs belong here, not in request handlers.</td>
+                  </tr>
+                  <tr>
+                    <td><code>apps/web</code></td>
+                    <td>Vite + React + Tailwind SPA: pages under <code>src/pages/</code>, layouts, shared UI components, client fetch helpers.</td>
+                  </tr>
+                  <tr>
+                    <td><code>apps/mobile</code></td>
+                    <td>Expo app; uses <code>EXPO_PUBLIC_*</code> env; SecureStore (or equivalent) for refresh token storage patterns.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="dev-layout-pkgs">Packages (<code>packages/</code>)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Package</th>
+                    <th>Responsibility</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>@starter/db</code></td>
+                    <td>
+                      Drizzle schema (<code>src/*-schema.ts</code>), repository modules (<code>src/*-repos.ts</code>), migration runners, <code>database-url.ts</code>. No HTTP — pure data access and
+                      invariants enforced in SQL/TS.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>@starter/shared</code></td>
+                    <td>Zod schemas, shared DTO shapes, billing math — imported by API and clients to prevent drift.</td>
+                  </tr>
+                  <tr>
+                    <td><code>@starter/crypto</code></td>
+                    <td>AES-GCM helpers for field-level encryption; used when persisting integration secrets and sensitive columns.</td>
+                  </tr>
+                  <tr>
+                    <td><code>@starter/logger</code></td>
+                    <td>Pino-based logging wrapper; prefer over <code>console.log</code> in API and worker.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section id="dev-flow">
+              <h2>Request &amp; module flow</h2>
+              <ul>
+                <li>
+                  <strong>Entry:</strong> <code>apps/api/src/index.ts</code> builds the Fastify instance, registers CORS, security plugins, rate limiting, JWT, and route families (tenant, account,
+                  platform, webhooks).
+                </li>
+                <li><strong>Routes:</strong> each file under <code>apps/api/src/routes/</code> should own one bounded HTTP surface (e.g. <code>tenant-sales.ts</code>, <code>tenant-crm.ts</code>); keep handlers thin — parse → validate with shared Zod → call repo → map DTO. Prefix map: <a href="./guidelines/modules-index.md">modules-index.md</a>.</li>
+                <li><strong>Tenant context:</strong> middleware attaches realm user + <code>tenant_id</code> from JWT; repositories in <code>@starter/db</code> must scope queries so cross-tenant reads/writes cannot occur.</li>
+                <li><strong>Platform vs realm:</strong> super-admin routes use separate auth context (null <code>tenant_id</code> users); do not mix guards accidentally.</li>
+              </ul>
+            </section>
+
+            <section id="dev-data">
+              <h2>Data layer &amp; migrations</h2>
+              <ul>
+                <li><strong>ORM:</strong> Drizzle with explicit SQL migrations checked in under <code>packages/db/drizzle/pg</code> and <code>packages/db/drizzle/mysql</code> — both dialects must stay logically equivalent for portable features.</li>
+                <li><strong>Repos:</strong> prefer query functions colocated with tables (e.g. <code>crm-repos.ts</code>, <code>sales-funnel-*-repos.ts</code>) over ad-hoc SQL in routes — easier to test and audit for tenant filters.</li>
+                <li><strong>Migrations:</strong> generate with Drizzle Kit from schema edits; apply via API boot (<code>AUTO_MIGRATE</code>) in dev or CI/CD steps in production.</li>
+                <li><strong>Subscriptions / payments:</strong> ledger in <code>platform_subscription_payments</code>; PSP correlation columns (<code>psp_*</code>) and subscription dunning fields ship with migration <code>0030</code> — see <a href="./guidelines/architecture.md">architecture.md</a>.</li>
+              </ul>
+            </section>
+
+            <section id="dev-erd">
+              <h2>Entity relationship diagram</h2>
+              <p>
+                ERD for the main persisted objects in <code>packages/db/src/pg-schema.ts</code> (MySQL equivalent:
+                <code>mysql-schema.ts</code>). Almost every business table carries <code>tenant_id</code> and cascades from
+                <strong>tenants</strong>. Interactive diagram below (pan, zoom, drag) — open <code>docs/index.html</code> offline; libraries live in <code>docs/jslibary/</code>.
+                Platform singleton settings tables are omitted.
+              </p>
+              <div class="diagram schema-erd-diagram" aria-labelledby="erd-caption">
+                <div id="schema-erd-legend" class="schema-erd-legend" aria-hidden="true"></div>
+                <div id="schema-erd-cy" class="schema-erd-cy" role="presentation"></div>
+              </div>
+              <p id="erd-caption" style="margin: 0.75rem 0 1rem; font-size: 0.88rem; color: var(--muted)">
+                Pan, scroll to zoom, and drag nodes. Modules sit in a 2×3 grid; thick arrows follow adjacent areas. Thin arrows are primary links inside a module. Edit <code>docs/schema-erd.js</code> when the schema changes.
+              </p>
+              <h3>Relationship notes</h3>
+              <ul>
+                <li><strong>Tenant scope</strong> — <code>crm_*</code>, <code>sales_funnel_*</code>, and <code>workforce_*</code> rows include <code>tenant_id</code> and should only be queried through tenant-scoped repositories.</li>
+                <li><strong>Users</strong> — Realm users belong to one tenant; <code>super_admin</code> users have <code>tenant_id = NULL</code>. <code>tenant_user_module_roles</code> grants per-module roles (CRM, sales, workforce).</li>
+                <li><strong>CRM graph</strong> — <code>crm_relationships</code> connects organizations and contacts via configurable <code>crm_relationship_types</code>; activities attach polymorphically to a related entity.</li>
+                <li><strong>Sales funnel</strong> — BDR leads and pipeline deals optionally link to <code>crm_organizations</code>; contacts attach through junction tables; promoting a lead sets <code>promoted_from_lead_id</code> on the deal.</li>
+                <li><strong>Subscriptions</strong> — <code>subscriptions</code> bill a tenant (organization-wide) or a single <code>user_id</code> per plan <code>billing_scope</code>; payments append to <code>platform_subscription_payments</code>.</li>
+              </ul>
+              <p>Table-level map for HTTP modules: <a href="./guidelines/modules-index.md">modules-index.md</a>. Domain guide: <a href="./sales-funnel-module.md">sales-funnel-module.md</a>.</p>
+            </section>
+
+            <section id="dev-contracts">
+              <h2>Shared contracts &amp; validation</h2>
+              <ul>
+                <li>Put request bodies and cross-cutting types in <code>packages/shared</code>; export Zod schemas and use <code>z.infer</code> in API and UI.</li>
+                <li><strong>Server wins:</strong> always re-validate on the API — client validation is UX only.</li>
+                <li>When adding an HTTP surface, add or extend a schema first so mobile and web cannot drift from the API.</li>
+              </ul>
+              <p>Convention detail: <a href="./guidelines/best-practices.md">best-practices.md</a>.</p>
+            </section>
+
+            <section id="dev-jobs">
+              <h2>Background jobs (BullMQ)</h2>
+              <ul>
+                <li>Queue names follow <code>{prod|dev}-&lt;purpose&gt;</code>; do not use <code>:</code> in names (BullMQ restriction).</li>
+                <li>Producer helpers live in API <code>src/lib/</code>; consumer registration in <code>apps/worker/src/index.ts</code>.</li>
+                <li>For subscription billing: separate queue from email, chunked jobs, deterministic <code>jobId</code>, DB idempotency guards — see <a href="./guidelines/best-practices.md">best-practices.md</a> (subscription payment generation).</li>
+              </ul>
+            </section>
+
+            <section id="dev-frontends">
+              <h2>Web &amp; mobile clients</h2>
+              <ul>
+                <li><strong>Vite:</strong> loads env from repo root; <code>VITE_API_BASE_URL</code> defaults from <code>API_PORT</code> (legacy <code>PORT</code>) when unset — see <a href="./guidelines/development.md">development.md</a>.</li>
+                <li><strong>UI:</strong> reuse <code>AppShell</code> layouts and Tailwind patterns; prefer extending existing components over one-off page markup.</li>
+                <li>
+                  <strong>Web routes (<code>apps/web</code>):</strong> public <code>/login</code>, <code>/signup</code>; <code>/super-admin/*</code> (users, jobs, integrations, subscriptions, features, mail);
+                  <code>/admin/*</code> (users, system, CRM, sales, workforce); <code>/user/*</code> (profile, CRM). Optional modules are gated (<code>*ModuleGate</code>) by tenant feature flags — see
+                  <a href="./sales-funnel-module.md">sales-funnel-module.md</a>.
+                </li>
+                <li><strong>Expo:</strong> public config via <code>EXPO_PUBLIC_*</code>; persist refresh tokens securely — see <a href="./mobile-devices.md">mobile-devices.md</a>.</li>
+              </ul>
+            </section>
+
+            <section id="dev-api-contract">
+              <h2>API contract &amp; ops</h2>
+              <ul>
+                <li>Versioned JSON API: <code>/v1/*</code> only (no legacy unprefixed mounts).</li>
+                <li>OpenAPI (Zod-derived starter surface): <code>GET /openapi.json</code> and Swagger UI at <code>/docs</code> on the API origin (e.g. <code>http://localhost:3500/docs</code> when running locally). Sync committed spec: <code>pnpm --filter @starter/api openapi:sync</code>.</li>
+                <li>Probes: <code>GET /health</code>, <code>GET /ready</code>; metrics: <code>GET /metrics</code> (<code>starter_http_requests_total</code>).</li>
+                <li>Request correlation: <code>X-Request-Id</code> on requests and responses.</li>
+              </ul>
+              <p>ADRs: <a href="./adr/001-api-versioning.md">001-api-versioning</a>, <a href="./adr/002-refresh-cookie-csrf.md">002-refresh-cookie-csrf</a>.</p>
+            </section>
+
+            <section id="dev-quality">
+              <h2>Quality gates &amp; CI</h2>
+              <ul>
+                <li><code>pnpm verify</code> — typecheck + tests across workspaces (pre-PR default).</li>
+                <li><code>pnpm build:ci</code> — verify then full build graph (CI-style).</li>
+                <li>Prefer unit tests beside pure logic (<code>packages/shared</code>, <code>packages/crypto</code>, parsers); keep route tests focused on HTTP integration where needed.</li>
+              </ul>
+              <p>Runner matrix and TDD notes: <a href="./guidelines/testing.md">testing.md</a>.</p>
+            </section>
+
+            <section id="dev-source-docs">
+              <h2>Source documentation standards</h2>
+              <p>
+                Every source file in the monorepo carries a <strong>file header</strong> (purpose, responsibilities, dependencies, security notes) and
+                <strong>TSDoc/JSDoc</strong> on exported symbols. The canonical rules live in
+                <a href="./guidelines/source-documentation.md">source-documentation.md</a> — use it when adding routes, repos, components, or shared contracts.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>What to document</th>
+                    <th>Where</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>File</td>
+                    <td>Why the file exists, responsibilities, major dependencies, security/tenant scope, extension points</td>
+                    <td>Block comment before imports</td>
+                  </tr>
+                  <tr>
+                    <td>Exports</td>
+                    <td>Purpose, params, returns, throws, side effects, performance/security when non-obvious</td>
+                    <td>TSDoc on functions, types, components, hooks</td>
+                  </tr>
+                  <tr>
+                    <td>Cross-cutting rules</td>
+                    <td>Architecture, env, testing, collaboration gates</td>
+                    <td><a href="./guidelines/README.md">guidelines/</a> (not duplicated in every file)</td>
+                  </tr>
+                  <tr>
+                    <td>Feature behaviour</td>
+                    <td>Product decisions, statuses, permissions</td>
+                    <td><code>docs/*-module.md</code></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>By workspace area</h3>
+              <ul>
+                <li><strong><code>apps/api</code></strong> — Route modules: URL prefix, auth guard, Zod entrypoints, repos called. <code>lib/</code>: side effects (queues, email, storage), tenant/platform scope.</li>
+                <li><strong><code>packages/db</code></strong> — Tables touched, <code>tenant_id</code> filters, field encryption boundaries, transaction assumptions.</li>
+                <li><strong><code>packages/shared</code></strong> — Domain meaning of Zod schemas and DTOs; consumers (API, web, mobile).</li>
+                <li><strong><code>apps/web</code></strong> — Component purpose, props, shell/layout conventions (<code>AppShell</code> carries page title — no duplicate <code>h1</code>).</li>
+                <li><strong><code>packages/crypto</code></strong> — Cipher scope, AAD binding, key material — never log plaintext or keys.</li>
+              </ul>
+              <div class="note note-dev">
+                <strong>Assistants:</strong> read <a href="../AGENTS.md">AGENTS.md</a> first, then <a href="./guidelines/source-documentation.md">source-documentation.md</a> when touching source. Update headers in the same change as behaviour edits.
+              </div>
+            </section>
+
+            <section id="dev-principles">
+              <h2>Conventions &amp; extending safely</h2>
+              <ul>
+                <li><strong>Documentation:</strong> file headers + export TSDoc per <a href="./guidelines/source-documentation.md">source-documentation.md</a>; cross-cutting updates in <code>docs/guidelines/</code> (see <a href="./guidelines/README.md">guidelines/README.md</a>).</li>
+                <li><strong>Coding assistants:</strong> start at <a href="../AGENTS.md">AGENTS.md</a> (repo root), then <a href="./guidelines/README.md">guidelines/README.md</a> and <a href="../.cursor/rules/README.md"><code>.cursor/rules/</code></a>.</li>
+                <li><strong>AI / structural changes:</strong> read <a href="./guidelines/prompt-principles.md">prompt-principles.md</a> — structural topology (extra apps, proxies, dual React trees) needs explicit approval before scaffolding.</li>
+                <li><strong>Product AI (future):</strong> not shipped; see <a href="./guidelines/ai-harness-checklist.md">ai-harness-checklist.md</a> and <a href="./adr/004-ai-harness.md">ADR 004</a> before adding in-app LLM features.</li>
+                <li><strong>Security:</strong> follow <a href="./guidelines/security.md">security.md</a> for secrets, logging, and tenant isolation reviews.</li>
+                <li><strong>Vocabulary:</strong> keep terms aligned with code and <a href="./guidelines/glossary.md">glossary.md</a>.</li>
+              </ul>
+            </section>
+
+            <section id="dev-markdown" class="md-links">
+              <h2>Markdown deep dives</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Document</th>
+                    <th>Use when…</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a href="../AGENTS.md">AGENTS.md</a> (repo root)</td>
+                    <td>First stop for coding assistants — read order, repo map, invariants, verification commands.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/README.md">guidelines/README.md</a></td>
+                    <td>Guidelines hub — read order, cluster index; separates continuous rules from <code>*-module.md</code> requirement tracking.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="../.cursor/rules/README.md">.cursor/rules/</a></td>
+                    <td>Cursor rule index — always-on gates (§1.1, nav shell, env prefix) and scoped web UI rules.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/architecture.md">architecture.md</a></td>
+                    <td>Understanding boundaries, subscription billing, Stripe baseline, diagrams.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/development.md">development.md</a></td>
+                    <td>Commands, ports, web→API URL, config file map.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/environment.md">environment.md</a></td>
+                    <td>Every env var and where it is read.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/authentication.md">authentication.md</a></td>
+                    <td>Realm vs platform auth, JWT contents, bootstrap.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/database.md">database.md</a></td>
+                    <td>Drizzle dialects, URL composition, migration CLI.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/security.md">security.md</a></td>
+                    <td>Hardening checklist, incident readiness.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/best-practices.md">best-practices.md</a></td>
+                    <td>Queues, logging, DB change workflow, UI consistency.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/testing.md">testing.md</a></td>
+                    <td>TDD, verify/build:ci, where tests live.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./adr/001-api-versioning.md">adr/001-api-versioning.md</a></td>
+                    <td>Why routes live under <code>/v1</code> and legacy deprecation.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./runbooks/deploy.md">runbooks/deploy.md</a></td>
+                    <td>Production deploy and post-deploy checks.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./runbooks/incident.md">runbooks/incident.md</a></td>
+                    <td>On-call triage and common failure modes.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/prompt-principles.md">prompt-principles.md</a></td>
+                    <td>Structural approval and requirement Q&amp;A discipline.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/source-documentation.md">source-documentation.md</a></td>
+                    <td>In-code file headers, TSDoc on exports, security notes — required for every source file.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/ai-dev-guide.md">ai-dev-guide.md</a></td>
+                    <td>Golden paths, invariants, and deferred auth decisions for onboarding.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/ai-harness-checklist.md">ai-harness-checklist.md</a></td>
+                    <td>Future in-app LLM harness checklist — not shipped; Cursor API stays IDE-only.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/modules-index.md">modules-index.md</a></td>
+                    <td>URL prefix → route module; key <code>@starter/db</code> repo files.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./sales-funnel-module.md">sales-funnel-module.md</a></td>
+                    <td>BDR leads, pipeline deals, lanes, activities, promotion rules.</td>
+                  </tr>
+                  <tr>
+                    <td><a href="./guidelines/glossary.md">glossary.md</a></td>
+                    <td>Canonical terms for tenants, auth, jobs.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </article>
+
+          <footer>
+            <p>
+              SaaS Starter Pack — <code>docs/index.html</code> (static hub). Source-of-truth prose: <code>docs/guidelines/</code> (coding guidelines), <code>docs/*-module.md</code> (feature specs), <code>docs/README.md</code> (index). Implementation detail lives in <a href="./guidelines/source-documentation.md">source file headers and TSDoc</a> next to the code.
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script src="./jslibary/cytoscape.min.js"></script>
+    <script src="./jslibary/dagre.min.js"></script>
+    <script src="./jslibary/cytoscape-dagre.js"></script>
+    <script src="./schema-erd.js"></script>
+    <script>
+      (function () {
+        var html = document.documentElement;
+        var searchInput = document.getElementById("doc-search");
+        var nav = document.getElementById("doc-nav");
+        var roleButtons = document.querySelectorAll("[data-role-filter]");
+        var segments = document.querySelectorAll("[data-section-role]");
+        var sidebar = document.getElementById("sidebar");
+        var openBtn = document.getElementById("sidebar-open");
+        var backdrop = document.getElementById("sidebar-backdrop");
+
+        function normalize(s) {
+          return (s || "").toLowerCase().trim();
+        }
+
+        function setRole(role) {
+          html.setAttribute("data-role", role);
+          roleButtons.forEach(function (b) {
+            b.setAttribute("aria-pressed", b.getAttribute("data-role-filter") === role ? "true" : "false");
+          });
+          applyFilters();
+          if (typeof window.schemaErdInit === "function") {
+            window.schemaErdInit();
+          }
+        }
+
+        function linkMatchesRole(a, role) {
+          if (role === "all") return true;
+          return a.getAttribute("data-nav-for") === role;
+        }
+
+        function applyFilters() {
+          var q = normalize(searchInput && searchInput.value);
+          var role = html.getAttribute("data-role") || "all";
+
+          segments.forEach(function (seg) {
+            var r = seg.getAttribute("data-section-role");
+            seg.hidden = role !== "all" && r !== role;
+          });
+
+          if (!nav) return;
+
+          nav.querySelectorAll(".nav-block").forEach(function (block) {
+            var blockRole = block.getAttribute("data-nav-role");
+            var blockRoleOk = role === "all" || blockRole === role;
+            var anyVisible = false;
+
+            block.querySelectorAll(".lvl1 > li").forEach(function (li) {
+              var sub = li.querySelector(".lvl2");
+              var mainA = li.querySelector(":scope > a[data-keywords]");
+              if (!mainA) return;
+
+              var mainMatch =
+                blockRoleOk &&
+                linkMatchesRole(mainA, role) &&
+                (!q || normalize(mainA.textContent + " " + mainA.getAttribute("data-keywords")).indexOf(q) !== -1);
+              var subAny = false;
+
+              if (sub) {
+                sub.querySelectorAll("a[data-keywords]").forEach(function (sa) {
+                  var sm =
+                    blockRoleOk &&
+                    linkMatchesRole(sa, role) &&
+                    (!q || normalize(sa.textContent + " " + sa.getAttribute("data-keywords")).indexOf(q) !== -1);
+                  sa.closest("li").hidden = !sm;
+                  if (sm) subAny = true;
+                });
+              }
+
+              var showLi = mainMatch || subAny;
+              li.hidden = !showLi;
+              if (showLi) anyVisible = true;
+            });
+
+            block.hidden = !blockRoleOk || (!anyVisible && q.length > 0) || (role !== "all" && blockRole !== role);
+          });
+        }
+
+        roleButtons.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setRole(btn.getAttribute("data-role-filter") || "all");
+          });
+        });
+
+        if (searchInput) {
+          searchInput.addEventListener("input", applyFilters);
+        }
+
+        function closeSidebar() {
+          document.body.classList.remove("nav-open");
+          if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+          if (backdrop) backdrop.hidden = true;
+        }
+
+        function openSidebar() {
+          document.body.classList.add("nav-open");
+          if (openBtn) openBtn.setAttribute("aria-expanded", "true");
+          if (backdrop) backdrop.hidden = false;
+        }
+
+        if (openBtn) {
+          openBtn.addEventListener("click", function () {
+            if (document.body.classList.contains("nav-open")) closeSidebar();
+            else openSidebar();
+          });
+        }
+        if (backdrop) {
+          backdrop.addEventListener("click", closeSidebar);
+        }
+
+        nav &&
+          nav.addEventListener("click", function (e) {
+            var t = e.target;
+            if (t && t.closest && t.closest("a[href^='#']")) {
+              if (window.matchMedia("(max-width: 960px)").matches) closeSidebar();
+            }
+          });
+
+        function revealSectionForHash() {
+          var id = (location.hash || "").slice(1);
+          if (!id) return;
+          var el = document.getElementById(id);
+          if (!el) return;
+          var seg = el.closest("[data-section-role]");
+          if (!seg) return;
+          var role = html.getAttribute("data-role") || "all";
+          if (role !== "all" && seg.getAttribute("data-section-role") !== role) {
+            setRole("all");
+          }
+        }
+
+        window.addEventListener("hashchange", revealSectionForHash);
+
+        applyFilters();
+        revealSectionForHash();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+description: Naming convention for development-only environment variables
+alwaysApply: true
+---
+
+# `DEV_ONLY_` prefix for development-only env settings
+
+Any environment variable whose effect is **limited to non-production** (i.e. it does nothing, or is rejected/overridden, when `NODE_ENV=production`) MUST be named with a **`DEV_ONLY_`** prefix.
+
+This makes it obvious in `.env`, `.env.example`, and code reviews that the setting is a local/dev convenience and is safe to omit (or actively unsafe to rely on) in production.
+
+## When it applies
+
+- The reader returns early / ignores the value in production, **or**
+- A production boot guard rejects the value (the setting is "blocked in prod").
+
+If a setting is a real **production** control (even an emergency override like `ADMIN_PASSWORD_RESET_RETURN_PLAIN`, or a prod opt-in like `AUTO_MIGRATE=force`), do **not** prefix it.
+
+## How to apply
+
+- Rename consistently across **all** surfaces: the reader (`process.env.*`), `.env.example`, `playwright.config.ts` / test fixtures, error-message hints, and `docs/guidelines/environment.md`.
+- Keep the dev-only gate in code; the prefix documents intent, it does not enforce it.
+
+```ts
+// ✅ GOOD — no effect in production, so prefixed
+export const shouldExposeRegistrationVerificationCode = (): boolean => {
+  const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase() ?? "development";
+  if (nodeEnv === "production") return false;
+  if (process.env.DEV_ONLY_REGISTRATION_EXPOSE_VERIFICATION_CODE === "true") return true;
+  return nodeEnv === "test" || nodeEnv === "development";
+};
+```

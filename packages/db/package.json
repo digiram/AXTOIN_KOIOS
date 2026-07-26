@@ -1,0 +1,41 @@
+{
+  "name": "@starter/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src --ext .ts",
+    "test": "node --test --import tsx ./test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:generate:pg": "drizzle-kit generate --config drizzle.config.pg.ts",
+    "db:generate:mysql": "drizzle-kit generate --config drizzle.config.mysql.ts",
+    "db:generate:supabase": "drizzle-kit generate --config drizzle.config.pg.ts",
+    "db:migrate:pg": "drizzle-kit migrate --config drizzle.config.pg.ts",
+    "db:migrate:mysql": "drizzle-kit migrate --config drizzle.config.mysql.ts",
+    "db:migrate:supabase": "drizzle-kit migrate --config drizzle.config.pg.ts",
+    "db:migrate": "tsx ./src/migrate-cli.ts",
+    "db:purge-test-fixtures": "tsx ./src/purge-test-fixtures-cli.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@starter/crypto": "workspace:*",
+    "@starter/shared": "workspace:*",
+    "dotenv": "^16.6.1",
+    "drizzle-orm": "^0.45.2",
+    "imapflow": "^1.0.171",
+    "mailparser": "^3.7.2",
+    "mysql2": "^3.0.0",
+    "node-ical": "^0.20.1",
+    "nodemailer": "^9.0.1",
+    "pg": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.5",
+    "@types/nodemailer": "^8.0.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.22.4"
+  }
+}

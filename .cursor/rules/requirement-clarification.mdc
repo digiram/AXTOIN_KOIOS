@@ -1,0 +1,29 @@
+---
+description: Strict requirement Q&A — clarify before non-trivial implementation
+alwaysApply: true
+---
+
+# Requirement clarification (grill, don’t guess)
+
+Follow **`docs/guidelines/prompt-principles.md`**:
+
+- **§1 (especially §1.1)** — **structural / repo topology** decisions (second Vite app, dual React majors, extra dev servers, proxies, iframe bridges, nested workspaces, new deployables): **proposal + explicit approval** before scaffolding or wiring.
+- **§2 (especially §2.1–2.3)** — **requirement** ambiguity: triggers, Q&A discipline, self-gate checklist for every **non-trivial** request. **§2.2:** on gaps or unclear specs, **take initiative** with **multiple choice** (and **markdown tables** when several picks are needed) — **even if I didn’t ask** for that format. **§2.5:** when several questions appear in one reply, **continue option letters** `a, b, c, …` across questions (`d, e, f` for the next, etc.) so picks like “**b** and **e**” stay unambiguous.
+
+## Before meaningful implementation
+
+1. If **§1.1 structural triggers** apply → **stop**: short options (A/B/C), no merged scaffolding until I approve or waive **§1.1** for this task.
+2. If **§2.1 hard-stop** triggers (no definition of done, fuzzy scope, unclear roles, data lifecycle, compat, security, UX, “like X”, or conflict with existing code) → **ask targeted questions first**. State assumptions in one short block if I insist on speed.
+3. Prefer **forced-choice** (A/B/C + one-line trade-off), **markdown tables** for multi-topic picks, or **AskQuestion** when options are enumerable — **proactively** when something is underspecified; don’t wait for me to request “options.”
+4. If I answer only part of a multi-part question → **re-ask missing parts** before coding.
+5. Run the **§2.3 checklist** (goal, scope, interfaces, failure modes, verification); if something material is missing → **ask**, don’t silently invent product or security behaviour.
+
+## When you may skip a full grill
+
+Only for **small, localized** changes: obvious bug with repro, typo, single obvious refactor **with no** new user-visible behaviour, **no** schema/API change, **no** cross-tenant/security impact — and existing tests/typecheck suffice as done.
+
+Skipping **§2** clarification does **not** waive **§1.1**: if a change hits a structural trigger, still get **explicit approval** (or a written waiver for this task) before building it.
+
+## Tone
+
+Short, direct questions; minimal preamble. Push back politely on inconsistencies.

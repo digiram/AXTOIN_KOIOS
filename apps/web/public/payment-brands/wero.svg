@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 28" role="img" aria-labelledby="wero-title">
+  <title id="wero-title">Wero</title>
+  <rect width="72" height="28" rx="6" fill="#0f172a"/>
+  <text
+    x="36"
+    y="19"
+    text-anchor="middle"
+    fill="#2dd4bf"
+    font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="14"
+    font-weight="800"
+    letter-spacing="-0.03em"
+  >Wero</text>
+</svg>

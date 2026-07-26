@@ -1,0 +1,1294 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "KOIOS API",
+    "version": "1.0.0",
+    "description": "Versioned REST API under `/v1`. Unversioned: `GET /health`, `GET /ready`, `GET /metrics`, `GET /openapi.json`, `POST /webhooks/stripe`. Schemas for request bodies are generated from `@starter/shared` Zod definitions."
+  },
+  "servers": [
+    {
+      "url": "/v1"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/LoginInput",
+                "definitions": {
+                  "LoginInput": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 320
+                      },
+                      "password": {
+                        "type": "string",
+                        "minLength": 8
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token (and optional refresh) or MFA step"
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register/start": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Start self-service registration (email verification)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/RegisterStartInput",
+                "definitions": {
+                  "RegisterStartInput": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "password": {
+                        "type": "string",
+                        "minLength": 8
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "email",
+                      "password"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent (or dev code returned)"
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register/verify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Complete registration after email verification",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/RegisterVerifyInput",
+                "definitions": {
+                  "RegisterVerifyInput": {
+                    "type": "object",
+                    "properties": {
+                      "registrationTicket": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "code": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 16
+                      }
+                    },
+                    "required": [
+                      "registrationTicket",
+                      "code"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens issued or MFA step"
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Rotate refresh token",
+        "responses": {
+          "200": {
+            "description": "New access token"
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/self-registration": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Platform self-registration flag",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/TenantSelfRegistrationQuery",
+              "definitions": {
+                "TenantSelfRegistrationQuery": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Whether signup is enabled at platform level",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "selfRegisterEnabled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tenant/crm/organizations": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "List organizations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged organizations"
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "Create organization",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/CrmOrganizationCreate",
+                "definitions": {
+                  "CrmOrganizationCreate": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 320,
+                        "nullable": true
+                      },
+                      "phone": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "nullable": true
+                      },
+                      "emails": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "value": {
+                              "type": "string",
+                              "format": "email",
+                              "maxLength": 320
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "value",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 40
+                      },
+                      "phones": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "value": {
+                              "type": "string",
+                              "maxLength": 320
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "value",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 40
+                      },
+                      "addresses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "addressLine1": {
+                              "type": "string",
+                              "maxLength": 512,
+                              "nullable": true
+                            },
+                            "addressLine2": {
+                              "type": "string",
+                              "maxLength": 512,
+                              "nullable": true
+                            },
+                            "houseNumber": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "nullable": true
+                            },
+                            "postalCode": {
+                              "type": "string",
+                              "maxLength": 32,
+                              "nullable": true
+                            },
+                            "city": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "state": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "country": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 20
+                      },
+                      "marketSegmentLayer1Id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "marketSegmentLayer2Id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "marketSegmentLayer3Id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "marketingTagIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "maxItems": 30
+                      },
+                      "holdingOrganizationId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "addressLine1": {
+                        "type": "string",
+                        "maxLength": 512,
+                        "nullable": true
+                      },
+                      "addressLine2": {
+                        "type": "string",
+                        "maxLength": 512,
+                        "nullable": true
+                      },
+                      "postalCode": {
+                        "type": "string",
+                        "maxLength": 32,
+                        "nullable": true
+                      },
+                      "city": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      },
+                      "state": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      },
+                      "country": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created organization"
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tenant/crm/contacts": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "List contacts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged contacts"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "CRM"
+        ],
+        "summary": "Create contact",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/CrmContactCreate",
+                "definitions": {
+                  "CrmContactCreate": {
+                    "type": "object",
+                    "properties": {
+                      "firstName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "salutation": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "nullable": true
+                      },
+                      "title": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 320,
+                        "nullable": true
+                      },
+                      "phone": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "nullable": true
+                      },
+                      "emails": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "value": {
+                              "type": "string",
+                              "format": "email",
+                              "maxLength": 320
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "value",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 40
+                      },
+                      "phones": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "value": {
+                              "type": "string",
+                              "maxLength": 320
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "value",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 40
+                      },
+                      "addresses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 64
+                            },
+                            "addressLine1": {
+                              "type": "string",
+                              "maxLength": 512,
+                              "nullable": true
+                            },
+                            "addressLine2": {
+                              "type": "string",
+                              "maxLength": 512,
+                              "nullable": true
+                            },
+                            "houseNumber": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "nullable": true
+                            },
+                            "postalCode": {
+                              "type": "string",
+                              "maxLength": 32,
+                              "nullable": true
+                            },
+                            "city": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "state": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "country": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "nullable": true
+                            },
+                            "isPrimary": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "isPrimary"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 20
+                      },
+                      "employerOrganizationId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "addressLine1": {
+                        "type": "string",
+                        "maxLength": 512,
+                        "nullable": true
+                      },
+                      "addressLine2": {
+                        "type": "string",
+                        "maxLength": 512,
+                        "nullable": true
+                      },
+                      "postalCode": {
+                        "type": "string",
+                        "maxLength": 32,
+                        "nullable": true
+                      },
+                      "city": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      },
+                      "state": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      },
+                      "country": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "firstName",
+                      "lastName"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created contact"
+          }
+        }
+      }
+    },
+    "/tenant/sales/bdr/leads": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "summary": "Create BDR lead",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/SalesFunnelBdrLeadCreate",
+                "definitions": {
+                  "SalesFunnelBdrLeadCreate": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 8000,
+                        "default": ""
+                      },
+                      "stageKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64
+                        },
+                        "maxItems": 20
+                      },
+                      "ownerUserId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "crmOrganizationId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "contactIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "maxItems": 50
+                      },
+                      "contacts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "contactId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "role": {
+                              "type": "string",
+                              "maxLength": 128,
+                              "default": ""
+                            }
+                          },
+                          "required": [
+                            "contactId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 50
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created lead"
+          }
+        }
+      }
+    },
+    "/tenant/workforce/employees": {
+      "post": {
+        "tags": [
+          "Workforce"
+        ],
+        "summary": "Create employee",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/WorkforceEmployeeCreate",
+                "definitions": {
+                  "WorkforceEmployeeCreate": {
+                    "type": "object",
+                    "properties": {
+                      "firstName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "dateOfEmployment": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "personalPhone": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 64
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "personalEmail": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 320
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "workPhone": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 64
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "workEmail": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 320
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "personalAddress": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 8000
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "workLocation": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 512
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "employmentOrgUnitId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "jobTitle": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 255
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "employeeKind": {
+                        "type": "string",
+                        "enum": [
+                          "person",
+                          "agent"
+                        ],
+                        "default": "person"
+                      },
+                      "notes": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 8000
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "workTimeKind": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "full",
+                              "part"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "enum": [
+                              "null"
+                            ],
+                            "nullable": true
+                          }
+                        ]
+                      },
+                      "workSchedule": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "day": {
+                              "type": "string",
+                              "enum": [
+                                "mon",
+                                "tue",
+                                "wed",
+                                "thu",
+                                "fri",
+                                "sat",
+                                "sun"
+                              ]
+                            },
+                            "start": {
+                              "type": "string",
+                              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                            },
+                            "end": {
+                              "type": "string",
+                              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                            }
+                          },
+                          "required": [
+                            "day",
+                            "start",
+                            "end"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 7
+                      }
+                    },
+                    "required": [
+                      "firstName",
+                      "lastName"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created employee"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

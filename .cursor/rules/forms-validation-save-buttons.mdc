@@ -1,0 +1,31 @@
+---
+description: Form validation messaging + submit button idle/saving/saved behavior for apps/web
+globs: apps/web/**/*.{tsx,ts}
+alwaysApply: false
+---
+
+# Forms: validation UX & primary submit buttons (`apps/web`)
+
+Use **`apps/web/src/pages/settings/AccountSettingsPage.tsx`** (change-password block: **`PasswordFieldLabel`**, **`passwordInputClassNames`**, **`passwordSubmitUi`**) as the **reference implementation**.
+
+## Validation messaging
+
+- **Field-level errors**: Prefer `Partial<Record<FieldKey, string>>` (or a typed map) over one blob string—associate messages with the field(s) they explain.
+- **Label row**: **`Label`** then **`|`** (muted: **`text-slate-400`**, `aria-hidden` on separator), then **error copy** (`font-normal text-rose-600`). **`flex flex-wrap`** so lines wrap on small widths.
+- **Inputs with errors**: Add a **left accent**—`**border-l-4 border-l-rose-600**`, tighten rose **`ring`** / **`focus:ring-*`** so focus stays visibly invalid—not only gray chrome.
+- **Accessibility**: **`aria-invalid={Boolean(fieldError)}`** when that field has an error.
+- **Replace HTML5 bubbles**: If copy lives inline next to labels, put **`noValidate`** on **`<form>`** and validate in submit handlers so browsers don’t show conflicting native tooltips (still enforce rules server-side).
+- **Central copy**: Short **`PASSWORD_*`** / **`CONST`** strings at module scope when reused or paired with tests—avoid drifting wording.
+- **Clear errors**: Clear mapped errors when the user edits fields in that form group **and** when remote **`settings`/identity reload succeeds**, so stale reds don’t linger.
+
+## Primary actions (“Save”, “Update …”, submit)
+
+Where an explicit submit persists meaningful server state (password PATCH, profile chunks):
+
+1. **`idle`** — neutral/submit label (e.g. slate primary button).
+2. **`saving`** — **`Loader2`** from **`lucide-react`** (**`animate-spin`**), visible **`Saving…`** (or domain wording); **`aria-busy`**; **`cursor-wait`**; disable duplicate submits without hiding the loading affordance (avoid **`opacity-50`** obscuring the spinner unless intentional).
+3. **`saved`** — **`Check`** + **`Saved`**, **`bg-emerald-600`** (or equivalent green success styling); keep **`disabled`** until state resets.
+
+**Revert saved → idle** when relevant controlled inputs change **or** after a successful full reload that resets that slice (same mental model as “fresh page”). Match **`AccountSettingsPage`** **`onPasswordFieldChange`** + **`load`** clearing **`passwordSubmitUi`**.
+
+Do **not** duplicate global **`Saved.** toast-style flashes under the button for the same action unless product asks—in-success belongs **inside** the button when following this pattern.

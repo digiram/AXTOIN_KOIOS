@@ -1,0 +1,24 @@
+{
+  "name": "@starter/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "node ../../scripts/run-dev-registered.mjs @starter/worker tsx watch src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "node --test --import tsx ./test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@starter/db": "workspace:*",
+    "@starter/logger": "workspace:*",
+    "@starter/shared": "workspace:*",
+    "bullmq": "^5.0.0",
+    "dotenv": "^16.0.0",
+    "ioredis": "^5.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}

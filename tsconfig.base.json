@@ -1,0 +1,18 @@
+{
+  // Shared compiler defaults for backend packages and Node-oriented apps.
+  // Bundler apps (Vite / Expo) override moduleResolution / jsx as needed in local tsconfig.json.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}

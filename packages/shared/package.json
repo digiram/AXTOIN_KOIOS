@@ -1,0 +1,21 @@
+{
+  "//": "Shared Zod contracts — Node apps resolve via tsconfig paths; Vite uses vite.config alias to source for production bundles.",
+  "name": "@starter/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src --ext .ts",
+    "test": "node --test --import tsx ./test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
+}

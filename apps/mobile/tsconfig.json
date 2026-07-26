@@ -1,0 +1,14 @@
+{
+  // Expo / React Native — Bundler resolution aligns with Metro; App.tsx lives at package root.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "paths": {
+      "@starter/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["App.tsx", "src"]
+}

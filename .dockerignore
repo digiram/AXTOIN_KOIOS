@@ -1,0 +1,19 @@
+# Docker ignore — keep build context lean and exclude secrets
+
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+.cursor
+.dev
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+coverage
+playwright-report
+test-results
+*.log
+uploads
+packages/db/drizzle/**/meta

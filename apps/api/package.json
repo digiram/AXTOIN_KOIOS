@@ -1,0 +1,50 @@
+{
+  "name": "@starter/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "node ../../scripts/run-dev-registered.mjs @starter/api tsx watch src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "node --test --import tsx \"./test/**/*.test.ts\" \"./test/integration/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "openapi:sync": "tsx scripts/sync-openapi.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@fastify/cookie": "^11.0.0",
+    "@fastify/cors": "^11.0.0",
+    "@fastify/helmet": "^13.0.0",
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "9.0.3",
+    "@fastify/rate-limit": "^10.0.0",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.6",
+    "@fastify/websocket": "^11.2.0",
+    "@starter/crypto": "workspace:*",
+    "@starter/db": "workspace:*",
+    "@starter/logger": "workspace:*",
+    "@starter/shared": "workspace:*",
+    "@types/nodemailer": "^8.0.0",
+    "argon2": "^0.44.0",
+    "bullmq": "^5.76.3",
+    "dotenv": "^16.0.0",
+    "fastify": "^5.0.0",
+    "fastify-raw-body": "5.0.0",
+    "ioredis": "^5.10.1",
+    "lucide-static": "^1.18.0",
+    "mjml": "^5.3.0",
+    "isomorphic-dompurify": "^3.17.0",
+    "nodemailer": "^9.0.1",
+    "otplib": "^13.4.0",
+    "sharp": "^0.35.1",
+    "stripe": "17.0.0",
+    "zod": "^3.0.0",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "devDependencies": {
+    "@types/mjml": "^5.0.0",
+    "tsx": "^4.22.4"
+  }
+}

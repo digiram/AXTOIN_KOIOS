@@ -1,0 +1,15 @@
+{
+  // Fastify API — NodeNext resolution; path aliases point at workspace package sources for DX without rebuilding packages on every change.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@starter/shared": ["../../packages/shared/src/index.ts"],
+      "@starter/db": ["../../packages/db/src/index.ts"],
+      "@starter/crypto": ["../../packages/crypto/src/index.ts"],
+      "@starter/logger": ["../../packages/logger/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

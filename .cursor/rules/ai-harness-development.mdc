@@ -1,0 +1,33 @@
+---
+description: Gate for runtime AI/LLM product work — follow harness checklist before implementing
+globs: packages/ai/**,**/ai/**,**/*llm*,**/*openai*,**/*anthropic*
+alwaysApply: false
+---
+
+# AI harness development gate
+
+This app **does not** expose the Cursor API or other LLM providers to users today. Cursor is for **IDE-assisted development** only.
+
+## When this rule applies
+
+Any task that adds or changes **in-app** AI/LLM behavior (routes, workers, provider SDKs, prompts, RAG, agents).
+
+## Before implementing
+
+1. Read **[`docs/guidelines/ai-harness-checklist.md`](../../docs/guidelines/ai-harness-checklist.md)**.
+2. Get **§1.1 structural approval** ([`prompt-principles.md`](../../docs/guidelines/prompt-principles.md)) for new packages, SDKs, or deployables.
+3. **Do not** call `@cursor/sdk`, OpenAI, or Anthropic directly from routes/workers — plan a centralized harness first.
+
+## Minimum bar for new AI code
+
+- Single harness entry point (`packages/ai` or approved location)
+- Versioned prompt registry (not inline strings in handlers)
+- JWT-scoped tenant context; never authorize from client-supplied tenant ids
+- Zod-validated structured outputs where JSON is consumed
+- Stub provider for CI tests; no live API keys in `pnpm verify`
+- `AI_ENABLED` master switch documented in `.env.example`
+
+## Not in scope
+
+- Cursor IDE rules, skills, and `AGENTS.md` (coding-assistant governance — already covered elsewhere)
+- Workforce UI label `employeeKind: agent` (taxonomy only)

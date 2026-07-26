@@ -1,0 +1,10 @@
+{
+  // Pure shared types & Zod schemas — compiled output consumed by API and frontends.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}

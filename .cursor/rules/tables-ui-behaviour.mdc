@@ -1,0 +1,61 @@
+---
+description: Data table layout, sorting, rows, action rails, and row-level UX for apps/web
+globs: apps/web/**/*.{tsx,ts}
+alwaysApply: false
+---
+
+# Tables: layout & behaviour (`apps/web`)
+
+Use **`apps/web/src/pages/super/SuperUsersPage.tsx`** as the **reference** for dense admin-style directory tables (filters → stats → table → pagination).
+
+## Page structure
+
+1. **Filters** — optional card (**`rounded-2xl border border-stone-200/80 bg-white`**, section heading + icon). Tie filters to URL (**`useSearchParams`**) when the list is server-driven so refresh/back preserves state.
+2. **Error** — **`role="alert"`**, **`text-rose-600`**, below filters / above stats.
+3. **Stats row** — record count (`**text-stone-600**`) + compact **rows-per-page** control (**`List`** icon + bordered **`select`**).
+4. **Table wrapper** — **`overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm`**; inner **`table`** **`min-w-[…]`** so horizontal scroll on small viewports (pick min width from columns).
+5. **Pagination** — below the table; disable buttons appropriately when empty.
+
+## `<table>` semantics & header row
+
+- **`aria-label`** on **`<table>`**; **`<caption className="sr-only">`** describing sortability / purpose.
+- **`thead`**: **`bg-slate-50`**, header labels **`text-xs font-medium uppercase tracking-wider text-slate-500`**.
+- **Sortable columns**: each **`th`** wraps a **`button type="button"`** (**`border-0 bg-transparent`**) — toggles sort; set **`aria-sort`** to **`none`** | **`ascending`** | **`descending`**. Show **one** direction indicator only on the active column (chevron up/down placeholder when inactive — see **`SortIndicator`** in Super Users).
+
+## Body rows
+
+- **Zebra**: alternate **`bg-white`** / **`bg-slate-50/40`** by row index; **`hover:bg-slate-100/80`** + **`transition-colors`**.
+- **Dense text**: **`text-sm text-slate-700`**, **`divide-y divide-slate-100`** on **`tbody`**.
+- **Truncation**: **`max-w-0 truncate`** + **`title={…}`** on long strings; **`tabular-nums`** for dates/counts when relevant.
+
+## Loading & empty
+
+- Single **`tr`** + **`td colSpan={columnCount}`** with centered **`Loading…`** / empty message, **`py-16`**, muted text — avoid shifting layout.
+
+## Row click vs action column
+
+Use **`tableShowsActionColumn`** and **`bindTableRowPrimaryAction`** from **`apps/web/src/lib/tableRowAction.ts`**:
+
+| Row actions | UX |
+|-------------|-----|
+| **One** non-destructive action (view, edit, open) | **No** action column — entire row is clickable (`cursor-pointer`, **`tabIndex={0}`**, **`aria-label`**, Enter/Space). |
+| **Two or more** actions | Action column with icon rail. |
+| **One** destructive action (delete/remove) | Action column — never bind delete to a whole-row click. |
+| **Zero** actions | No action column. |
+
+When a row is clickable, nested controls in remaining columns must **`stopPropagation`** on click.
+
+## Action column (“rail”)
+
+- Narrow fixed column (**e.g. `w-[4.5rem]`**), **`border-l border-slate-200`** from data columns.
+- **Split icon buttons** (**`flex min-h-[2.75rem]`**): secondary neutral (**`bg-stone-100`**) + primary accent (**`bg-amber-100`** for “main” row action). **`title`**, **`aria-label`**, **`focus-visible:ring-inset`**, **`disabled`** during async work.
+- **Lucide** icons — **`strokeWidth={2}`** unless matching existing **`2.5`** accents.
+
+## Row overlay / confirmation (`SuperUsersPage`)
+
+- Pending destructive row actions: **`relative z-[1]`** on **`tr`** so row borders sit above **`tbody divide-y`** where needed.
+- **Confirm UI**: replace row with **`colSpan`** cells + **`border-2 border-amber-400`** outer frame (split **`td`** **`border-r-0`** / **`border-l-0`**); inner mask **`bg-white`**; prompt **right-aligned** beside rail; **Cancel** (**`rose-*`**) left / **Confirm** (**`emerald-*`**) right — mirror pill palette.
+
+## Badges & chips
+
+- Domain pills (roles, etc.): **amber-forward** — light fill + crisp border (**`border-amber-*`**, **`bg-amber-50`**, **`text-amber-950`**); pair with a small **Lucide** glyph for scanability.

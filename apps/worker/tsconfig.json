@@ -1,0 +1,14 @@
+{
+  // BullMQ worker — shares DB package typings via path alias (same pattern as API).
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@starter/db": ["../../packages/db/src/index.ts"],
+      "@starter/logger": ["../../packages/logger/src/index.ts"],
+      "@starter/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

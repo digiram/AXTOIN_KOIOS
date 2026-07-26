@@ -1,0 +1,15 @@
+---
+description: Entry point for continuous coding guidelines (docs/guidelines)
+alwaysApply: true
+---
+
+# Guidelines hub
+
+**Continuous coding guidelines** live in **`docs/guidelines/`** — start at [`docs/guidelines/README.md`](../../docs/guidelines/README.md).
+
+- **Guidelines** — architecture, security, testing, collaboration gates, golden paths (`docs/guidelines/*.md`).
+- **Not guidelines** — feature **requirement tracking** in `docs/*-module.md` (recorded product decisions, delivery scope). Read those only when working on that module.
+- **ADRs** — `docs/adr/`. **Runbooks** — `docs/runbooks/`.
+- **Product AI (future)** — not shipped; see [`docs/guidelines/ai-harness-checklist.md`](../../docs/guidelines/ai-harness-checklist.md).
+
+Follow [`AGENTS.md`](../../AGENTS.md) read order. For ask-vs-build gates, see [`docs/guidelines/prompt-principles.md`](../../docs/guidelines/prompt-principles.md) and `requirement-clarification.mdc`.

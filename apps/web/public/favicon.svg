@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="KOIOS">
+  <rect width="32" height="32" rx="7" fill="#4f46e5"/>
+  <!-- Ear tufts -->
+  <path fill="#fff" d="M7.5 12.2 11.2 3.8 14.2 11.4z"/>
+  <path fill="#fff" d="M17.8 11.4 20.8 3.8 24.5 12.2z"/>
+  <!-- Head -->
+  <ellipse cx="16" cy="18.2" rx="11.2" ry="10.4" fill="#fff"/>
+  <!-- Eye rings -->
+  <circle cx="11.4" cy="16.6" r="4.15" fill="#4f46e5"/>
+  <circle cx="20.6" cy="16.6" r="4.15" fill="#4f46e5"/>
+  <!-- Pupils -->
+  <circle cx="11.4" cy="16.6" r="1.7" fill="#1e1b4b"/>
+  <circle cx="20.6" cy="16.6" r="1.7" fill="#1e1b4b"/>
+  <!-- Highlights -->
+  <circle cx="12.35" cy="15.55" r="0.65" fill="#fff"/>
+  <circle cx="21.55" cy="15.55" r="0.65" fill="#fff"/>
+  <!-- Beak -->
+  <path fill="#a5b4fc" d="M16 18.4 13.9 22.1h4.2z"/>
+</svg>
