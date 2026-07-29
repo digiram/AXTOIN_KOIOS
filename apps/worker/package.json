@@ -15,9 +15,9 @@
     "@starter/db": "workspace:*",
     "@starter/logger": "workspace:*",
     "@starter/shared": "workspace:*",
-    "bullmq": "^5.0.0",
-    "dotenv": "^16.0.0",
-    "ioredis": "^5.0.0"
+    "bullmq": "^5.81.2",
+    "dotenv": "^17.4.2",
+    "ioredis": "^5.11.1"
   },
   "devDependencies": {
     "tsx": "^4.22.4"
