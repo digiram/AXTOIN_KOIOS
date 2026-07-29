@@ -25,8 +25,19 @@ Use before first production traffic and after material config changes.
 ## Observability and edge
 
 - [ ] Load balancer: `GET /health` (liveness), `GET /ready` (readiness)
+- [ ] Worker (if Hostinger jobs slot): `GET /health` returns `{"status":"ok","service":"@starter/worker"}`
 - [ ] `GET /metrics` **not** exposed on the public internet (scrape from private network only — see [deploy.md](./deploy.md))
 - [ ] Clients use **`/v1`** only (legacy unprefixed routes removed in template vNext)
+
+## Hostinger (three Web App slots)
+
+When deploying from this monorepo on Hostinger, use **three** Node.js Web Apps on the **same Git branch**, with **root directory = repo root** on each slot. Full table and env notes: [deploy.md](./deploy.md#hostinger--three-web-app-slots-one-repo).
+
+- [ ] Backend slot: build `build:api`, start `start:api` (or entry `apps/api/dist/index.js`); `CORS_ORIGINS` includes the SPA origin
+- [ ] Frontend slot: build `build:web`, output `apps/web/dist`; `VITE_API_BASE_URL` set to the public API origin **at build time**
+- [ ] Worker slot: build `build:worker`, start `start:worker` (or entry `apps/worker/dist/index.js`); same DB / `QUEUE_STRATEGY` as API
+- [ ] Domains only in env (not hardcoded); package manager **pnpm**; Node 20 or 22
+- [ ] CSP remains meta-only on Hostinger (no `Content-Security-Policy` HTTP header from Node)
 
 ## Verification
 

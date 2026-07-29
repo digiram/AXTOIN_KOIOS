@@ -595,6 +595,9 @@
               </li>
               <li>
                 <a href="#op-runbooks" data-nav-for="operator" data-keywords="deploy incident rollback ready health metrics">Deploy &amp; incident runbooks</a>
+                <ul class="lvl2">
+                  <li><a href="#op-hostinger" data-nav-for="operator" data-keywords="hostinger three slots api web worker build:api build:web build:worker pnpm monorepo jobs os">Hostinger (3 Web Apps)</a></li>
+                </ul>
               </li>
               <li>
                 <a href="#op-markdown" data-nav-for="operator" data-keywords="readme markdown runbook editable documentation">Markdown runbooks</a>
@@ -1011,9 +1014,76 @@ docker compose --profile postgres up --build</code></pre>
               <h2>Deploy &amp; incident runbooks</h2>
               <ul>
                 <li><a href="./runbooks/production-checklist.md">runbooks/production-checklist.md</a> — pre-go-live checklist (secrets, S3, cookies, /v1).</li>
-                <li><a href="./runbooks/deploy.md">runbooks/deploy.md</a> — production deploy steps, probes, rollback notes.</li>
+                <li><a href="./runbooks/deploy.md">runbooks/deploy.md</a> — production deploy steps, Hostinger three-slot layout, probes, rollback notes.</li>
                 <li><a href="./runbooks/incident.md">runbooks/incident.md</a> — triage, common failures, security steps.</li>
               </ul>
+            </section>
+
+            <section id="op-hostinger">
+              <h2>Hostinger — three Web App slots (one repo)</h2>
+              <p>
+                Deploy the <strong>same Git branch</strong> three times as separate Node.js Web Apps so production mirrors local
+                <code>pnpm dev:all</code> (API + web + worker). Keep <strong>root directory = repository root</strong> on every slot
+                (pnpm workspaces need the monorepo root — do not set root to <code>apps/api</code> alone). Pick the role with
+                <strong>build / start scripts</strong> in hPanel; keep hostnames in environment variables only (do not hardcode domains in code).
+                Full detail: <a href="./runbooks/deploy.md">runbooks/deploy.md</a>.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Slot</th>
+                    <th>Example hostname</th>
+                    <th>Build command</th>
+                    <th>Start / entry</th>
+                    <th>Output directory</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Backend</td>
+                    <td><code>api.&lt;your-domain&gt;</code></td>
+                    <td><code>build:api</code></td>
+                    <td><code>start:api</code> or entry <code>apps/api/dist/index.js</code></td>
+                    <td>— (server)</td>
+                  </tr>
+                  <tr>
+                    <td>Frontend</td>
+                    <td><code>os.&lt;your-domain&gt;</code></td>
+                    <td><code>build:web</code></td>
+                    <td>— (static)</td>
+                    <td><code>apps/web/dist</code></td>
+                  </tr>
+                  <tr>
+                    <td>Worker</td>
+                    <td><code>jobs.&lt;your-domain&gt;</code></td>
+                    <td><code>build:worker</code></td>
+                    <td><code>start:worker</code> or entry <code>apps/worker/dist/index.js</code></td>
+                    <td>— (server)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ul>
+                <li>Package manager: <strong>pnpm</strong> (from <code>pnpm-lock.yaml</code>). Node: <strong>20</strong> or <strong>22</strong>.</li>
+                <li>
+                  Backend: set <code>CORS_ORIGINS</code> to the SPA origin; API uses Hostinger <code>PORT</code> when <code>API_PORT</code> is unset.
+                </li>
+                <li>
+                  Frontend: set <code>VITE_API_BASE_URL</code> to the public API origin <strong>at build time</strong>.
+                </li>
+                <li>
+                  Worker: same DB / <code>QUEUE_STRATEGY</code> as the API; Hostinger <code>PORT</code> enables worker
+                  <code>GET /health</code> (optional local override: <code>WORKER_PORT</code>).
+                </li>
+                <li>
+                  Local development stays unchanged: <code>pnpm install</code>, <code>pnpm dev:all</code>, <code>pnpm stop</code>,
+                  <code>pnpm verify</code>.
+                </li>
+              </ul>
+              <div class="note">
+                <strong>CSP on Hostinger:</strong> keep meta-only CSP (default). Do not send
+                <code>Content-Security-Policy</code> as an HTTP header from Node — LiteSpeed can 503. See
+                <a href="./guidelines/security.md">security.md</a>.
+              </div>
             </section>
 
             <section id="op-markdown" class="md-links">
@@ -1026,6 +1096,7 @@ docker compose --profile postgres up --build</code></pre>
                 <li><a href="./guidelines/authentication.md">authentication.md</a> — auth flows and roles</li>
                 <li><a href="./guidelines/database.md">database.md</a> — migrations and dialects</li>
                 <li><a href="./guidelines/security.md">security.md</a> — hardening and checklist</li>
+                <li><a href="./runbooks/deploy.md">runbooks/deploy.md</a> — deploy + Hostinger three-slot layout</li>
               </ul>
             </section>
           </article>
@@ -1340,7 +1411,7 @@ docker compose --profile postgres up --build</code></pre>
                   </tr>
                   <tr>
                     <td><a href="./runbooks/deploy.md">runbooks/deploy.md</a></td>
-                    <td>Production deploy and post-deploy checks.</td>
+                    <td>Production deploy, Hostinger three Web App slots (<code>build:api</code> / <code>build:web</code> / <code>build:worker</code>), post-deploy checks.</td>
                   </tr>
                   <tr>
                     <td><a href="./runbooks/incident.md">runbooks/incident.md</a></td>

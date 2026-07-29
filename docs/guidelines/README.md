@@ -62,7 +62,7 @@ Use this table to find the **canonical doc** per concern. Edit the linked file w
 | **Background jobs** | BullMQ naming, email queue, subscription billing idempotency | [`best-practices.md`](best-practices.md), [`architecture.md`](architecture.md) (realm subscriptions) |
 | **Local dev & env** | Install, commands, ports, `.env`, Docker | [`development.md`](development.md), [`environment.md`](environment.md) |
 | **Testing & handoff** | TDD, runners, fixtures, `pnpm verify` / `build:ci` | [`testing.md`](testing.md) |
-| **Deploy & production** | Secrets, migrate in CI, health checks, CSP post-deploy | [`../runbooks/`](../runbooks/) |
+| **Deploy & production** | Secrets, migrate in CI, health checks, CSP post-deploy, **Hostinger 3-slot** (`build:api` / `build:web` / `build:worker`) | [`../runbooks/deploy.md`](../runbooks/deploy.md), [`../runbooks/`](../runbooks/) |
 | **Web UI shell** | Route + sidebar + title, AppShell, React peers, tables/forms/icons | [`.cursor/rules/`](../../.cursor/rules/) |
 
 **Module-specific behaviour** (statuses, permissions, data model for one feature) → the relevant `docs/*-module.md`, not this index.
@@ -80,6 +80,7 @@ Use this table to find the **canonical doc** per concern. Edit the linked file w
 | System shape, billing architecture | [`architecture.md`](architecture.md) | — |
 | Contracts, validation, jobs, UI reuse | [`best-practices.md`](best-practices.md) | — |
 | Env vars | [`environment.md`](environment.md) + `.env.example` | [`field-encryption.md`](field-encryption.md) |
+| Hostinger / production deploy | [`../runbooks/deploy.md`](../runbooks/deploy.md), [`../runbooks/production-checklist.md`](../runbooks/production-checklist.md) | — |
 | Auth flows | [`authentication.md`](authentication.md) | — |
 | Security & CSP | [`security.md`](security.md) | — |
 | PR security gates | [`contributing-security.md`](contributing-security.md) | — |

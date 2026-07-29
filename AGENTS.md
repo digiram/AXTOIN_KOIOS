@@ -61,6 +61,7 @@ packages/
 | Shared request body | Zod in `packages/shared/src/` → export from `index.ts` → use in route + web |
 | Product AI / LLM (future) | [`ai-harness-checklist.md`](docs/guidelines/ai-harness-checklist.md) + §1.1 approval — no runtime AI shipped today |
 | OpenAPI artifact | `pnpm --filter @starter/api openapi:sync` after route/schema changes |
+| Hostinger deploy (3 slots) | Same repo/branch; root `build:api` / `build:web` / `build:worker` + `start:api` / `start:worker`; see [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md) |
 
 ## Non-negotiable invariants
 

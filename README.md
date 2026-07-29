@@ -40,6 +40,8 @@ pnpm dev:all           # web + API + worker
 | `pnpm -r typecheck` / `build` / `test` / `lint` | All workspace packages |
 | `pnpm verify` | **Typecheck + test** (recommended before PRs) |
 | `pnpm build:ci` | **`verify`** then **`pnpm -r build`** (CI-style gate) |
+| `pnpm build:api` / `build:web` / `build:worker` | Hostinger Web App role builds (repo root; see [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md)) |
+| `pnpm start:api` / `start:worker` | Run compiled API or worker after the matching `build:*` |
 | `pnpm test:watch` | Web **Vitest** watch mode |
 
 ## Architecture (high level)

@@ -45,6 +45,8 @@ Per-module **product decisions** and delivery scope (not general guidelines):
 | Path | Contents |
 |------|----------|
 | [`adr/`](adr/) | Architecture decision records |
-| [`runbooks/`](runbooks/) | Deploy, production checklist, incident |
+| [`runbooks/`](runbooks/) | Deploy (including **Hostinger three Web App slots**), production checklist, incident |
+
+Canonical Hostinger layout: [`runbooks/deploy.md`](runbooks/deploy.md) (also summarized in [`index.html`](index.html) → Operator → Hostinger).
 
 Root [`README.md`](../README.md) — short quick start.
