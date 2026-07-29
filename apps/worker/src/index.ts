@@ -2,13 +2,16 @@
  * Worker process entrypoint (`@starter/worker`).
  *
  * Boots background job consumers for email, subscription billing, invoicing lifecycle,
- * and mailbox sync. Chooses queue backend from `QUEUE_STRATEGY`.
+ * and mailbox sync. Chooses queue backend from `QUEUE_STRATEGY`. Optionally starts a
+ * tiny HTTP liveness server (`GET /health`) when `WORKER_PORT` or platform `PORT` is set
+ * (Hostinger jobs hostname keep-alive).
  *
  * Responsibilities:
  * - Validate minimal env and database connectivity before subscribing to queues
  * - `local` — delegate to SQL `background_jobs` poller (`database-worker.ts`)
  * - `external` — BullMQ workers over Redis (`REDIS_URL`)
  * - Wire shared email handlers and domain-specific worker modules
+ * - Optional health HTTP for PaaS process keep-alive (`health-server.ts`)
  *
  * Depends on:
  * - `@starter/db`, `@starter/logger`, `@starter/shared`
@@ -31,6 +34,7 @@ import { createLogger, printDevServiceReady, resolveLogLevel } from "@starter/lo
 import { assertMinimalBootEnv, getDb } from "@starter/db";
 
 import { startDatabaseWorkers } from "./database-worker.js";
+import { startWorkerHealthServer } from "./health-server.js";
 import {
   resolveInvoicingLifecycleQueueName,
   startInvoicingLifecycleWorker
@@ -55,6 +59,8 @@ try {
   log.fatal(err, "Minimal environment configuration incomplete — refusing to start");
   process.exit(1);
 }
+
+startWorkerHealthServer();
 
 const queuePrefix = nodeEnv === "production" ? "prod" : "dev";
 const queueName = `${queuePrefix}-email`;

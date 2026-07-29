@@ -112,7 +112,7 @@ const repoRoot = path.resolve(dir, "../..");
 
 export default defineConfig(({ mode }) => {
   const loaded = loadEnv(mode, repoRoot, "");
-  const portNum = resolveApiListenPort(loaded.API_PORT);
+  const portNum = resolveApiListenPort(loaded.API_PORT, loaded.PORT);
   const port = String(portNum);
   const explicitApi = (loaded.VITE_API_BASE_URL || "").trim();
   const useDevApiProxy = mode === "development" && !explicitApi;

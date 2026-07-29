@@ -41,6 +41,8 @@ TDD, CI gates, and runner details: **[testing.md](testing.md)**.
 | `pnpm -r test` / `pnpm -r lint` / `pnpm -r build` | As named |
 | `pnpm verify` | **Typecheck + test** all packages (recommended before PRs) |
 | `pnpm build:ci` | **`verify`** then **`pnpm -r build`** (CI-style full gate) |
+| `pnpm build:api` / `build:web` / `build:worker` | Production builds for Hostinger Web App slots (repo root; see [deploy runbook](../runbooks/deploy.md)) |
+| `pnpm start:api` / `start:worker` | Run compiled API or worker from repo root (after the matching `build:*`) |
 | `pnpm test:watch` | Vitest watch mode for **`@starter/web`** (same as `--filter @starter/web test:watch`) |
 
 ## Web app → API URL

@@ -15,8 +15,9 @@ Canonical template: **`.env.example`** at the repo root (copy to **`.env`**).
 | Variable | Purpose |
 |----------|---------|
 | `NODE_ENV` | `development` vs `production`; affects defaults (e.g. `AUTO_MIGRATE`, BullMQ queue prefix). Swagger UI at `/docs` and `GET /openapi.json` are **off** in production unless `OPENAPI_DOCS_ENABLED=true`. |
-| `API_PORT` | **Preferred:** TCP port for the Fastify API (default **3000** if unset and legacy `PORT` is unset). Vite dev proxy targets this port when `VITE_API_BASE_URL` is unset. See `resolveApiListenPort` in `packages/shared`. |
-| `PORT` | **Legacy alias** for `API_PORT` — read only when `API_PORT` is unset or empty. Prefer `API_PORT` in new `.env` files. |
+| `API_PORT` | **Preferred:** TCP port for the Fastify API (default **3500** when unset and platform `PORT` is unset). Vite dev proxy targets this port when `VITE_API_BASE_URL` is unset. See `resolveApiListenPort` in `packages/shared`. |
+| `PORT` | Platform / PaaS listen port (Hostinger injects this). Used by the API when `API_PORT` is unset, and by the worker health HTTP server when `WORKER_PORT` is unset. Prefer `API_PORT` / `WORKER_PORT` in local `.env`. |
+| `WORKER_PORT` | Optional TCP port for the worker `GET /health` liveness server. When unset (typical local `pnpm dev:worker`), health HTTP is skipped. On Hostinger jobs slots, platform `PORT` enables it automatically. |
 | `CORS_ORIGINS` | Comma-separated browser origins allowed to call the API (e.g. `http://localhost:5173`). **Required for browser access in production:** when `NODE_ENV` is `production` and this is unset or empty after parsing, CORS is **off** (`Access-Control-Allow-Origin` is not issued for cross-origin requests). When unset in non-production, the API uses **reflect** mode for local dev convenience. |
 | `CORS_CREDENTIALS` | Set to `true` only if the SPA uses credentialed requests (cookies); requires explicit `CORS_ORIGINS` (no wildcard). |
 | `CORS_ALLOWED_HEADERS` | Optional comma-separated `Access-Control-Allow-Headers` list (lowercase). Defaults include `authorization` and `content-type` for JSON + JWT. |

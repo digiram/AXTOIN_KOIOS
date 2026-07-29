@@ -8,7 +8,8 @@
  * 4. Optionally apply SQL migrations (see `@starter/db` `shouldAutoMigrate` / `runMigrations`).
  * 5. Optionally bootstrap platform super admin from `BOOTSTRAP_SUPER_ADMIN_*` (see `lib/bootstrap-super-admin.ts`).
  * 6. In development, seed LoginPage quick-login users for `company.com` (see `lib/bootstrap-dev-quick-users.ts`).
- * 7. Build Fastify app (`app.ts`) and listen on `API_PORT` — default **3500** (see `resolveApiListenPort`).
+ * 7. Build Fastify app (`app.ts`) and listen on `API_PORT` (else platform `PORT`, else **3500** —
+ *    see `resolveApiListenPort`).
  *
  * Multitenancy is enforced inside routes via JWT claims + repositories that always scope by `tenant_id`.
  */
@@ -27,7 +28,7 @@ import { shutdownJobQueueWsHub } from "./lib/job-queue-ws-hub.js";
 
 const apiDevBootStartedAt = Date.now();
 
-const port = resolveApiListenPort(process.env.API_PORT);
+const port = resolveApiListenPort(process.env.API_PORT, process.env.PORT);
 const nodeEnv = process.env.NODE_ENV ?? "development";
 const dialect = process.env.DATABASE_DIALECT ?? "postgres";
 

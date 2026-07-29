@@ -7,7 +7,11 @@
 
 import { z } from "zod";
 
-export { DEFAULT_API_LISTEN_PORT, resolveApiListenPort } from "./api-listen-port.js";
+export {
+  DEFAULT_API_LISTEN_PORT,
+  resolveApiListenPort,
+  resolveWorkerHealthListenPort
+} from "./api-listen-port.js";
 
 export {
   DATABASE_QUEUE_DEFAULTS,
